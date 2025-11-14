@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>   // pour std::vector
+#include <vector>
 
 // Classe abstraite de base pour toutes les options
 class Option {
@@ -8,21 +8,19 @@ protected:
     double _expiry;   // maturité T
 
 public:
-    // Constructeur
     explicit Option(double expiry);
 
-    // Getter sur la maturité
     double getExpiry() const;
 
-    // Payoff h(z) = fonction abstraite
+    // Payoff h(z) de l'option
     virtual double payoff(double z) const = 0;
 
-    // Par défaut, une option n'est PAS asiatique
+    // Par défaut : pas asiatique, pas américaine
     virtual bool isAsianOption() const { return false; }
+    virtual bool isAmericanOption() const { return false; }
 
-    // Payoff sur un chemin : par défaut, on prend le dernier point
+    // Payoff sur un chemin (par défaut : payoff au dernier point)
     virtual double payoffPath(const std::vector<double>& path) const;
 
-    // Destructeur virtuel
     virtual ~Option() = default;
 };

@@ -3,41 +3,49 @@
 #include "Option.h"
 #include "BinaryTree.h"
 
-// CRRPricer : pricer d'options européennes avec le modèle binomial CRR
 class CRRPricer {
 private:
-    Option* _option;          // pointeur vers l'option à pricer
+    Option* _option;          // option à pricer
     int _depth;               // N
-    double _S0;               // prix initial de l'actif
-    double _U;                // up  = U
-    double _D;                // down = D
-    double _R;                // taux sans risque R
+    double _S0;               // prix initial
+    double _U;                // up
+    double _D;                // down
+    double _R;                // taux sans risque par pas
 
-    BinaryTree<double> _tree; // arbre des valeurs H(n,i)
+    BinaryTree<double> _tree;     // H(n,i)
+    BinaryTree<bool>   _exercise; // politique d'exercice pour Américaines
 
-    bool _computed;           // indique si compute() a déjà été fait
+    bool _computed;
 
-    // fonction utilitaire : calcule le prix S(n,i)
     double stockPrice(int n, int i) const;
 
 public:
-    // Constructeur : 
-    // depth = N, asset_price = S0, up = U, down = D, interest_rate = R
+    // Constructeur "classique" : on donne U, D, R
     CRRPricer(Option* option,
-        int depth,
-        double asset_price,
-        double up,
-        double down,
-        double interest_rate);
+              int depth,
+              double asset_price,
+              double up,
+              double down,
+              double interest_rate);
 
-    // Lance le schéma CRR par backward induction
+    // Constructeur Black-Scholes approx : on donne r (continu) et sigma
+    CRRPricer(Option* option,
+              int depth,
+              double asset_price,
+              double r,
+              double volatility);
+
+    // CRR backward induction (Européenne ou Américaine)
     void compute();
 
-    // Getter : renvoie H(n,i)
+    // H(n,i)
     double get(int n, int i) const;
 
+    // Politique d'exercice : true si on exerce à (n,i)
+    bool getExercise(int n, int i) const;
+
     // Prix de l'option :
-    // - si closed_form=false : utilise compute() et H(0,0)
-    // - si closed_form=true : utilise directement la formule fermée
+    //  - Européenne : closed_form=false → CRR, closed_form=true → formule fermée
+    //  - Américaine : closed_form doit rester false (sinon on l'ignore / exception)
     double operator()(bool closed_form = false);
 };

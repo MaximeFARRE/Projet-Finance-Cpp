@@ -63,6 +63,18 @@
     <ClInclude Include="MT.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="BlackScholesMCPricer.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="AmericanOption.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="AmericanCallOption.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="AmericanPutOption.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Option.cpp">
@@ -108,6 +120,18 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="MT.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="BlackScholesMCPricer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="AmericanOption.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="AmericanCallOption.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="AmericanPutOption.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

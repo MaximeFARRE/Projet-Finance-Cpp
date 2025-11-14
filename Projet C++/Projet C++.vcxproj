@@ -123,10 +123,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AmericanCallOption.h" />
+    <ClInclude Include="AmericanOption.h" />
+    <ClInclude Include="AmericanPutOption.h" />
     <ClInclude Include="AsianCallOption.h" />
     <ClInclude Include="AsianOption.h" />
     <ClInclude Include="AsianPutOption.h" />
     <ClInclude Include="BinaryTree.h" />
+    <ClInclude Include="BlackScholesMCPricer.h" />
     <ClInclude Include="BlackScholesPricer.h" />
     <ClInclude Include="CallOption.h" />
     <ClInclude Include="CRRPricer.h" />
@@ -139,10 +143,14 @@
     <ClInclude Include="PutOption.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AmericanCallOption.cpp" />
+    <ClCompile Include="AmericanOption.cpp" />
+    <ClCompile Include="AmericanPutOption.cpp" />
     <ClCompile Include="AsianCallOption.cpp" />
     <ClCompile Include="AsianOption.cpp" />
     <ClCompile Include="AsianPutOption.cpp" />
     <ClCompile Include="BinaryTree.cpp" />
+    <ClCompile Include="BlackScholesMCPricer.cpp" />
     <ClCompile Include="BlackScholesPricer.cpp" />
     <ClCompile Include="CallOption.cpp" />
     <ClCompile Include="CRRPricer.cpp" />
