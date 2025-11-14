@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers de ressources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{eec89682-eba4-4e97-a888-a5e2e48eba8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{e2e015ff-ac0d-4681-b1b7-639a90f80e1e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Option.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="EuropeanVanillaOption.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="CallOption.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="PutOption.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="BlackScholesPricer.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="BinaryTree.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="CRRPricer.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="EuropeanDigitalOption.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="EuropeanDigitalCallOption.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="EuropeanDigitalPutOption.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="AsianOption.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="AsianCallOption.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="AsianPutOption.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="MT.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Option.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="EuropeanVanillaOption.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="CallOption.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="PutOption.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="BlackScholesPricer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="BinaryTree.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="CRRPricer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="EuropeanDigitalOption.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="EuropeanDigitalCallOption.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="EuropeanDigitalPutOption.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="AsianOption.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="AsianCallOption.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="AsianPutOption.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="MT.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
