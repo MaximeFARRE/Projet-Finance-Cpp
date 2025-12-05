@@ -3,40 +3,40 @@
 #include "Option.h"
 #include <vector>
 
-// Monte Carlo pricer sous Black-Scholes
-class BlackScholesMCPricer {
+// Monte Carlo pricer under Black-Scholes model
+class BlackScholesMCPricer
+{
 private:
-    Option* _option;              // pointeur vers l'option
-    double _S0;                   // prix initial
-    double _r;                    // taux sans risque
-    double _sigma;                // volatilité
+    Option* _option;              // pointer to option
+    double _S0;                   // initial price
+    double _r;                    // interest rate
+    double _sigma;                // volatility
 
-    long _nbPaths;                // nombre total de trajectoires générées
-    double _sumPayoff;            // somme des payoffs
-    double _sumPayoffSquared;     // somme des payoffs^2 (pour la variance)
+    int _nbPaths;                 // number of simulated paths
+    double _sumPayoff;            // sum of payoffs
+    double _sumPayoffSquared;     // sum of payoffs^2 (for variance)
 
-    std::vector<double> _timeSteps; // instants de simulation (t1,...,tm)
+    std::vector<double> _timeSteps;   // times of simulation
 
-    // Simule UNE trajectoire et met à jour les sommes
+    // simulate one path and update statistics
     void simulateOnePath();
 
 public:
-    // Constructeur
+    // constructor
     BlackScholesMCPricer(Option* option,
-        double S0,
-        double r,
-        double sigma);
+                         double initial_price,
+                         double interest_rate,
+                         double volatility);
 
-    // Génère nbPaths trajectoires supplémentaires
-    void generate(long nbPaths);
+    // generate nb_paths trajectories
+    void generate(int nb_paths);
 
-    // Renvoie le prix estimé actuel
-    double operator()() const;
+    // estimated price (mean of discounted payoffs)
+    double operator()();
 
-    // Intervalle de confiance 95% : [low, high]
-    std::vector<double> confidenceInterval() const;
+    // confidence interval 95%
+    std::vector<double> confidenceInterval();
 
-    // Retourne le nombre total de trajectoires simulées
-    long getNbPaths() const;
-
+    // number of simulated paths
+    int getNbPaths() const;
 };

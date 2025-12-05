@@ -1,18 +1,18 @@
 #include "CallOption.h"
-#include <algorithm> // pour std::max
 
-// Constructeur : transmet expiry et strike à EuropeanVanillaOption
 CallOption::CallOption(double expiry, double strike)
-    : EuropeanVanillaOption(expiry, strike)
-{
+    : EuropeanVanillaOption(expiry, strike) {
 }
 
-// Type de l'option : call
+double CallOption::payoff(double spot) const {
+    // payoff max(spot - K, 0)
+    double K = _strike;
+    if (spot > K) {
+        return spot - K;
+    }
+    return 0.0;
+}
+
 EuropeanVanillaOption::optionType CallOption::GetOptionType() const {
-    return optionType::call;
-}
-
-// Payoff du call : max(S - K, 0)
-double CallOption::payoff(double z) const {
-    return std::max(z - getStrike(), 0.0);
+    return EuropeanVanillaOption::call;
 }
