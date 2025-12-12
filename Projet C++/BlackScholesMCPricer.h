@@ -35,3 +35,4 @@ public:
     // Return the number of simulated paths
     long getNbPaths() const;
 };
+//

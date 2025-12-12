@@ -8,9 +8,9 @@ using namespace std;
 
 //constructor
 BlackScholesMCPricer::BlackScholesMCPricer(Option* option,
-    double S0,
-    double r,
-    double sigma)
+                                           double initial_price,
+                                           double interest_rate,
+                                           double volatility)
     : _option(option),
       _S0(S0),
       _r(r),

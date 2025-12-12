@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Option.h"
 #include <vector>
 #include <stdexcept>
@@ -27,3 +26,4 @@ public:
     // Payoff function
     virtual double payoff(double x) const = 0;
 };
+//

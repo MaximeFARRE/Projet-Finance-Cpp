@@ -1,5 +1,5 @@
 #include "MT.h"
-#include <cmath>
+#include <ctime>
 
 // Private constructor
 MT::MT()

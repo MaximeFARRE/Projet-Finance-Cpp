@@ -5,6 +5,9 @@ using namespace std;
 
 // call class for Asian options
 class AsianCallOption : public AsianOption {
+private:
+    double _strike;
+
 public:
     // constructor
     AsianCallOption(const vector<double>& timeSteps, double strike);

@@ -1,25 +1,21 @@
 #pragma once
-
 #include "Option.h"
-
-// Classe abstraite pour les options européennes vanilles (call/put)
+//
 class EuropeanVanillaOption : public Option {
 public:
-    // Type d'option : call ou put
     enum optionType { call, put };
 
-private:
-    double _strike;  // prix d'exercice K
-    friend class BlackScholesPricer;
-
+protected:
+    // strike is protected so children (Call, Put, Digital...) can use it
+    double _strike;
 
 public:
-    // Constructeur : initialise expiry (T) et strike (K)
+    // constructor: set expiry and strike
     EuropeanVanillaOption(double expiry, double strike);
 
-    // Getter sur le strike
-    double getStrike() const { return _strike; }
+    // friend so pricer can read the strike
+    friend class BlackScholesPricer;
 
-    // Chaque option devra indiquer si elle est call ou put
+    // each option must tell if it is call or put
     virtual optionType GetOptionType() const = 0;
 };

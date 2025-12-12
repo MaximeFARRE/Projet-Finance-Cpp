@@ -1,11 +1,13 @@
 #pragma once
-
 #include "AsianOption.h"
 #include <vector>
 using namespace std;
 
 // Asian put option class
 class AsianPutOption : public AsianOption {
+private:
+    double _strike;
+
 public:
     // Constructor
     AsianPutOption(const vector<double>& timeSteps, double strike);
@@ -13,3 +15,4 @@ public:
     // Payoff of the Asian put
     double payoff(double x) const override;
 };
+//

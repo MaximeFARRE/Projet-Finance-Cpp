@@ -1,5 +1,4 @@
 #pragma once
-
 #include <random>
 
 // Singleton class for generating random numbers
@@ -27,3 +26,4 @@ public:
     // Generate a standard normal random variable
     double rand_norm();
 };
+//

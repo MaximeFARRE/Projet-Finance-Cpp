@@ -1,15 +1,19 @@
 #include "EuropeanDigitalPutOption.h"
 
 EuropeanDigitalPutOption::EuropeanDigitalPutOption(double expiry, double strike)
-    : EuropeanDigitalOption(expiry, strike)
-{
+    : EuropeanDigitalOption(expiry, strike) {
 }
 
-EuropeanDigitalOption::OptionType EuropeanDigitalPutOption::GetOptionType() const {
-    return OptionType::put;
+double EuropeanDigitalPutOption::payoff(double spot) const {
+    // payoff is 1 if spot <= K, else 0
+    double K = _strike;
+    if (spot <= K) {
+        return 1.0;
+    }
+    return 0.0;
 }
 
-double EuropeanDigitalPutOption::payoff(double z) const {
-    // Digital Put : paye 1 si z <= K, 0 sinon
-    return (z <= getStrike()) ? 1.0 : 0.0;
+EuropeanVanillaOption::optionType EuropeanDigitalPutOption::GetOptionType() const {
+    return EuropeanVanillaOption::put;
 }
+//
