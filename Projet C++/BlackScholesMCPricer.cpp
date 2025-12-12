@@ -3,9 +3,11 @@
 #include "MT.h"
 
 #include <cmath>
-#include <stdexcept>
+#include <iostream>
 
-// Constructeur
+
+//  CONSTRUCTEUR
+
 BlackScholesMCPricer::BlackScholesMCPricer(Option* option,
     double S0,
     double r,
@@ -16,123 +18,155 @@ BlackScholesMCPricer::BlackScholesMCPricer(Option* option,
     _sigma(sigma),
     _nbPaths(0),
     _sumPayoff(0.0),
-    _sumPayoffSquared(0.0),
-    _timeSteps()
+    _sumPayoffSquared(0.0)
 {
-    if (_option == nullptr) {
-        throw std::invalid_argument("Option pointer cannot be null");
+    if (_option == nullptr)
+    {
+        // cas d'erreur simple
+        std::cout << "erreur option = nullptr dans BlackScholesMCPricer" << std::endl;
+        return;
     }
 
-    // Si l'option est asiatique, on récupère ses timeSteps
-    if (_option->isAsianOption()) {
-        AsianOption* asian = dynamic_cast<AsianOption*>(_option);
-        if (asian == nullptr) {
-            throw std::runtime_error("isAsianOption() = true but dynamic_cast<AsianOption*> failed");
-        }
+    // si c'est une option asiatique
+    if (_option->isAsianOption())
+    {
+        AsianOption* asian = static_cast<AsianOption*>(_option);
+
+        //  recupere dates de fixing
         _timeSteps = asian->getTimeSteps();
     }
-    else {
-        // Sinon, on simule avec un seul point à l'échéance T
+    else
+    {
+        // option europeenne : un seul time step a l'echeance
         double T = _option->getExpiry();
         _timeSteps.clear();
         _timeSteps.push_back(T);
     }
 }
 
-// Simule UNE trajectoire et met à jour les sommes
+// -- simule UNE trajectoire --
 void BlackScholesMCPricer::simulateOnePath()
 {
-    if (_timeSteps.empty()) {
-        throw std::runtime_error("timeSteps is empty in simulateOnePath");
-    }
+    if (_option == nullptr) return;
 
-    std::vector<double> path;
-    path.reserve(_timeSteps.size());
-
-    double S = _S0;
-    double prev_t = 0.0;
-
+    // generateur aleatoire global du projet
     MT& mt = MT::getInstance();
 
-    for (std::size_t k = 0; k < _timeSteps.size(); ++k) {
-        double t = _timeSteps[k];
-        double dt = t - prev_t;
+    double S = _S0;      // prix au debut
+    double prev_t = 0.0; // temps precedent
 
-        if (dt < 0.0) {
-            throw std::runtime_error("timeSteps must be non-decreasing");
-        }
+    std::vector<double> path;  // on stocke la trajectoire
 
-        if (dt > 0.0) {
-            double Z = mt.rand_norm();  // N(0,1)
+    // on parcourt tous les instants de temps
+    for (std::size_t i = 0; i < _timeSteps.size(); ++i)
+    {
+        double t = _timeSteps[i];
+        double dt = t - prev_t;  
 
+        if (dt > 0.0)
+        {
+            // tirage aleatoire normal
+            double Z = mt.rand_norm();
+
+            // drift et diffusion du modele Black-Scholes
             double drift = (_r - 0.5 * _sigma * _sigma) * dt;
-            double diff_term = _sigma * std::sqrt(dt) * Z;
+            double diffusion = _sigma * std::sqrt(dt) * Z;
 
-            S = S * std::exp(drift + diff_term);
+            // formule pour simuler S_t log-normal
+            S = S * std::exp(drift + diffusion);
         }
 
+        // on ajoute la valeur courante a la trajectoire
         path.push_back(S);
         prev_t = t;
     }
 
+    // calcul du payoff sur la trajectoire
     double payoff = _option->payoffPath(path);
 
-    _nbPaths++;
+    // mise a jour des statistiques pour la moyenne et la variance
+    _nbPaths += 1;
     _sumPayoff += payoff;
     _sumPayoffSquared += payoff * payoff;
 }
 
-// Génère nbPaths trajectoires supplémentaires
+//  GENERATE nbPaths 
 void BlackScholesMCPricer::generate(long nbPaths)
 {
     if (nbPaths <= 0) return;
 
-    for (long i = 0; i < nbPaths; ++i) {
+    // on appelle simulateOnePath nbPaths fois
+    for (long i = 0; i < nbPaths; ++i)
+    {
         simulateOnePath();
     }
 }
 
-// Prix estimé courant
+//  --Pricer Monte Carlo --
+
 double BlackScholesMCPricer::operator()() const
 {
-    if (_nbPaths == 0) {
-        throw std::runtime_error("No paths generated yet");
-    }
+    if (_nbPaths == 0 || _option == nullptr)
+        return 0.0;
 
+    // moyenne des payoffs
     double meanPayoff = _sumPayoff / static_cast<double>(_nbPaths);
-    double T = _option->getExpiry();
-    double discount = std::exp(-_r * T);
 
-    return discount * meanPayoff;
-}
-
-// Intervalle de confiance 95% : [low, high]
-std::vector<double> BlackScholesMCPricer::confidenceInterval() const
-{
-    if (_nbPaths == 0) {
-        throw std::runtime_error("No paths generated yet");
-    }
-
-    double n = static_cast<double>(_nbPaths);
-    double meanPayoff = _sumPayoff / n;
-    double meanSquare = _sumPayoffSquared / n;
-
-    double varPayoff = meanSquare - meanPayoff * meanPayoff;
-    if (varPayoff < 0.0) varPayoff = 0.0;  // sécurité numérique
-
-    double stdPayoff = std::sqrt(varPayoff);
+    // actualisation 
     double T = _option->getExpiry();
     double discount = std::exp(-_r * T);
 
     double price = discount * meanPayoff;
-    double halfWidth = 1.96 * discount * stdPayoff / std::sqrt(n);
+    return price;
+}
+ 
+//  inter de confiance 95%
 
-    std::vector<double> ci(2);
-    ci[0] = price - halfWidth;
-    ci[1] = price + halfWidth;
+std::vector<double> BlackScholesMCPricer::confidenceInterval() const
+{
+    std::vector<double> ci(2, 0.0);
+
+    if (_nbPaths <= 1 || _option == nullptr)
+    {
+        // pas assez de donnees : on met juste le prix actuel
+        double p = (*this)();
+        ci[0] = p;
+        ci[1] = p;
+        return ci;
+    }
+
+    double n = static_cast<double>(_nbPaths);
+
+    // E[X] et E[X^2]
+    double meanPayoff = _sumPayoff / n;
+    double meanPayoff2 = _sumPayoffSquared / n;
+
+    // variance des payoffs
+    double varPayoff = meanPayoff2 - meanPayoff * meanPayoff;
+    if (varPayoff < 0.0) varPayoff = 0.0; // securite numerique
+
+    double stdPayoff = std::sqrt(varPayoff); // ecart-type des payoffs
+
+    // payoff au prix en actualisant
+    double T = _option->getExpiry();
+    double discount = std::exp(-_r * T);
+
+    double price = discount * meanPayoff;
+
+    // ecart-type de la moyenne
+    double stdPrice = discount * stdPayoff / std::sqrt(n);
+
+    // 1.96 ~ quantile pour 95% de confiance
+    double alpha = 1.96;
+    ci[0] = price - alpha * stdPrice;
+    ci[1] = price + alpha * stdPrice;
+
     return ci;
 }
 
+// =============================
+//  NOMBRE DE TRAJECTOIRES
+// =============================
 long BlackScholesMCPricer::getNbPaths() const
 {
     return _nbPaths;

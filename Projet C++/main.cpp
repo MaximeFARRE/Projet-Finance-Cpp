@@ -21,10 +21,14 @@
 #include "BlackScholesMCPricer.h"
 #include "CRRPricer.h"
 
+#include <chrono>
+
 int main() {
     // -----------------------------
     // Paramètres communs (Excel)
     // -----------------------------
+    auto start = std::chrono::high_resolution_clock::now();
+
     double T = 5.0;
     double S0 = 100.0;
     double r = 0.01;
@@ -37,7 +41,7 @@ int main() {
     double U = 0.05;    // up
     double D = -0.045;  // down
 
-    long mcPaths = 100000; // nombre de trajectoires Monte Carlo
+    long mcPaths = 1000000; // nombre de trajectoires Monte Carlo
 
     std::cout << std::fixed << std::setprecision(6);
 
@@ -109,65 +113,61 @@ int main() {
     std::cout << "European Digital Put : " << bsEuroDigPutPrice << "\n\n";
 
     // =====================================================
-    // 3) MONTE CARLO
+    // 3) MONTE CARLO (avec BlackScholesMCPricer)
     //    European Call, Asian Call, European Digital Call,
     //    European Put, European Digital Put, Asian Put
     // =====================================================
+
+    // on va juste générer mcPaths trajectoires pour chaque option
 
     // European Call
     BlackScholesMCPricer mcEuroCall(&euroCall, S0, r, sigma);
     mcEuroCall.generate(mcPaths);
     double mcEuroCallPrice = mcEuroCall();
-    auto   mcEuroCallCI = mcEuroCall.confidenceInterval();
+    auto ciCall = mcEuroCall.confidenceInterval();
+    std::cout << "European Call IC95% : [" << ciCall[0] << ", " << ciCall[1] << "]\n";
+
 
     // Asian Call
     BlackScholesMCPricer mcAsianCall(&asianCall, S0, r, sigma);
     mcAsianCall.generate(mcPaths);
     double mcAsianCallPrice = mcAsianCall();
-    auto   mcAsianCallCI = mcAsianCall.confidenceInterval();
 
     // European Digital Call
     BlackScholesMCPricer mcEuroDigCall(&euroDigCall, S0, r, sigma);
     mcEuroDigCall.generate(mcPaths);
     double mcEuroDigCallPrice = mcEuroDigCall();
-    auto   mcEuroDigCallCI = mcEuroDigCall.confidenceInterval();
 
     // European Put
     BlackScholesMCPricer mcEuroPut(&euroPut, S0, r, sigma);
     mcEuroPut.generate(mcPaths);
     double mcEuroPutPrice = mcEuroPut();
-    auto   mcEuroPutCI = mcEuroPut.confidenceInterval();
 
     // European Digital Put
     BlackScholesMCPricer mcEuroDigPut(&euroDigPut, S0, r, sigma);
     mcEuroDigPut.generate(mcPaths);
     double mcEuroDigPutPrice = mcEuroDigPut();
-    auto   mcEuroDigPutCI = mcEuroDigPut.confidenceInterval();
 
     // Asian Put
     BlackScholesMCPricer mcAsianPut(&asianPut, S0, r, sigma);
     mcAsianPut.generate(mcPaths);
     double mcAsianPutPrice = mcAsianPut();
-    auto   mcAsianPutCI = mcAsianPut.confidenceInterval();
 
-    std::cout << "================ MC ================\n";
-    std::cout << "European Call        : " << mcEuroCallPrice
-        << "   CI95 = [" << mcEuroCallCI[0] << ", " << mcEuroCallCI[1] << "]\n";
+    std::cout << "================ MC (BlackScholesMCPricer) ================\n";
+    std::cout << "European Call        : " << mcEuroCallPrice << "\n";
+    std::cout << "Asian Call           : " << mcAsianCallPrice << "\n";
+    std::cout << "European Digital Call: " << mcEuroDigCallPrice << "\n";
+    std::cout << "European Put         : " << mcEuroPutPrice << "\n";
+    std::cout << "European Digital Put : " << mcEuroDigPutPrice << "\n";
+    std::cout << "Asian Put            : " << mcAsianPutPrice << "\n";
 
-    std::cout << "Asian Call           : " << mcAsianCallPrice
-        << "   CI95 = [" << mcAsianCallCI[0] << ", " << mcAsianCallCI[1] << "]\n";
+    // ------------------------------------------------------
+    // Temps d'exécution
+    // ------------------------------------------------------
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
 
-    std::cout << "European Digital Call: " << mcEuroDigCallPrice
-        << "   CI95 = [" << mcEuroDigCallCI[0] << ", " << mcEuroDigCallCI[1] << "]\n";
-
-    std::cout << "European Put         : " << mcEuroPutPrice
-        << "   CI95 = [" << mcEuroPutCI[0] << ", " << mcEuroPutCI[1] << "]\n";
-
-    std::cout << "European Digital Put : " << mcEuroDigPutPrice
-        << "   CI95 = [" << mcEuroDigPutCI[0] << ", " << mcEuroDigPutCI[1] << "]\n";
-
-    std::cout << "Asian Put            : " << mcAsianPutPrice
-        << "   CI95 = [" << mcAsianPutCI[0] << ", " << mcAsianPutCI[1] << "]\n";
+    std::cout << "\nExecution time: " << elapsed.count() << " seconds\n";
 
     return 0;
 }
