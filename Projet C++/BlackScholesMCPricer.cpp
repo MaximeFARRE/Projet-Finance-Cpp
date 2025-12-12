@@ -1,10 +1,9 @@
 #include "BlackScholesMCPricer.h"
 #include "AsianOption.h"
 #include "MT.h"
-
 #include <cmath>
 #include <iostream>
-
+using namespace std;
 
 //  CONSTRUCTEUR
 
@@ -30,7 +29,7 @@ BlackScholesMCPricer::BlackScholesMCPricer(Option* option,
     // si c'est une option asiatique
     if (_option->isAsianOption())
     {
-        AsianOption* asian = static_cast<AsianOption*>(_option);
+        AsianOption* asian = dynamic_cast<AsianOption*>(_option);
 
         //  recupere dates de fixing
         _timeSteps = asian->getTimeSteps();
@@ -56,17 +55,19 @@ void BlackScholesMCPricer::simulateOnePath()
     double prev_t = 0.0; // temps precedent
 
     std::vector<double> path;  // on stocke la trajectoire
+    double t,dt;
+    double Z;
 
     // on parcourt tous les instants de temps
     for (std::size_t i = 0; i < _timeSteps.size(); ++i)
     {
-        double t = _timeSteps[i];
-        double dt = t - prev_t;  
+        t = _timeSteps[i];
+        dt = t - prev_t;  
 
         if (dt > 0.0)
         {
             // tirage aleatoire normal
-            double Z = mt.rand_norm();
+            Z = mt.rand_norm();
 
             // drift et diffusion du modele Black-Scholes
             double drift = (_r - 0.5 * _sigma * _sigma) * dt;

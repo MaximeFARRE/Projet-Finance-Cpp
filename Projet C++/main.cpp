@@ -69,7 +69,7 @@ int main() {
     // =====================================================
     // 1) CRR : European & American, avec paramètres (R,U,D)
     // =====================================================
-
+    /*
     CRRPricer crrEuroCall(&euroCall, N, S0, U, D, R);
     CRRPricer crrEuroDigCall(&euroDigCall, N, S0, U, D, R);
     CRRPricer crrAmerCall(&amerCall, N, S0, U, D, R);
@@ -111,7 +111,7 @@ int main() {
     std::cout << "European Digital Call: " << bsEuroDigCallPrice << "\n";
     std::cout << "European Put         : " << bsEuroPutPrice << "\n";
     std::cout << "European Digital Put : " << bsEuroDigPutPrice << "\n\n";
-
+    */
     // =====================================================
     // 3) MONTE CARLO (avec BlackScholesMCPricer)
     //    European Call, Asian Call, European Digital Call,
@@ -127,7 +127,7 @@ int main() {
     auto ciCall = mcEuroCall.confidenceInterval();
     std::cout << "European Call IC95% : [" << ciCall[0] << ", " << ciCall[1] << "]\n";
 
-
+    /*
     // Asian Call
     BlackScholesMCPricer mcAsianCall(&asianCall, S0, r, sigma);
     mcAsianCall.generate(mcPaths);
@@ -152,14 +152,16 @@ int main() {
     BlackScholesMCPricer mcAsianPut(&asianPut, S0, r, sigma);
     mcAsianPut.generate(mcPaths);
     double mcAsianPutPrice = mcAsianPut();
+    */
 
     std::cout << "================ MC (BlackScholesMCPricer) ================\n";
     std::cout << "European Call        : " << mcEuroCallPrice << "\n";
-    std::cout << "Asian Call           : " << mcAsianCallPrice << "\n";
+   /* std::cout << "Asian Call           : " << mcAsianCallPrice << "\n";
     std::cout << "European Digital Call: " << mcEuroDigCallPrice << "\n";
     std::cout << "European Put         : " << mcEuroPutPrice << "\n";
     std::cout << "European Digital Put : " << mcEuroDigPutPrice << "\n";
     std::cout << "Asian Put            : " << mcAsianPutPrice << "\n";
+	*/
 
     // ------------------------------------------------------
     // Temps d'exécution
