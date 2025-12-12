@@ -40,7 +40,7 @@ BlackScholesMCPricer::BlackScholesMCPricer(Option* option,
         // European option
         double T = _option->getExpiry();
         _timeSteps.clear();
-        _timeSteps.push_back(T);
+        _timeSteps.push_back(T); //we keep the push_back for because it's only executed once here
     }
 }
 
