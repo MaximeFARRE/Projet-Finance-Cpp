@@ -1,28 +1,28 @@
 #include "MT.h"
 #include <cmath>
 
-// Constructeur privé : initialise la seed
+// Private constructor
 MT::MT()
 {
     std::random_device rd;
-    _gen = std::mt19937(rd()); // initialisation du mt19937
+    _gen = std::mt19937(rd());
 }
 
-// Retourne l'unique instance
+// Returns the unique instance of MT
 MT& MT::getInstance()
 {
-    static MT instance;   // créé une fois, réutilisé ensuite
+    static MT instance;
     return instance;
 }
 
-// Génère un uniforme U ~ [0,1]
+// Generate a uniform random variable
 double MT::rand_unif()
 {
     static std::uniform_real_distribution<double> dist(0.0, 1.0);
     return dist(_gen);
 }
 
-// Génère une normale Z ~ N(0,1)
+// Generate a normal random variable
 double MT::rand_norm()
 {
     static std::normal_distribution<double> dist(0.0, 1.0);
