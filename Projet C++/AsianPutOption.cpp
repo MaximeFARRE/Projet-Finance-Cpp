@@ -3,7 +3,7 @@
 using namespace std;
 
 // Constructor
-AsianPutOption::AsianPutOption(const std::vector<double>& timeSteps, double strike)
+AsianPutOption::AsianPutOption(const vector<double>& timeSteps, double strike)
     : AsianOption(timeSteps, strike)
 {
 }

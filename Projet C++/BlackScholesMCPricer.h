@@ -2,38 +2,36 @@
 
 #include "Option.h"
 #include <vector>
+using namespace std;
 
-// pricer Monte Carlo Black-Scholes
+// Monte Carlo pricer for Black-Scholes model
 class BlackScholesMCPricer
 {
 private:
-    Option* _option;              // pointeur vers l'option
-    double _S0;                   // prix initial
-    double _r;                    // taux sans risque
-    double _sigma;                // volatilite
+    Option* _option;              
+    double _S0;                   // initial spot price
+    double _r;                    // risk-free interest rate
+    double _sigma;                // volatility
 
-    long _nbPaths;                // nombre total de trajectoires simulees
-    double _sumPayoff;            // somme des payoffs
-    double _sumPayoffSquared;     // somme des payoffs^2 (pour la variance)
+    long _nbPaths;                // total number of simulated paths
+    double _sumPayoff;            
+    double _sumPayoffSquared;     
 
-    std::vector<double> _timeSteps;   // dates de simulation (fixings ou juste T)
-
-    // simule une trajectoire 
-    void simulateOnePath();
+    vector<double> _timeSteps;   // simulation dates
 
 public:
-    // constructeur
+    // Constructor
     BlackScholesMCPricer(Option* option, double S0, double r, double sigma);
 
-    // genere nbPaths trajectoires
+    // Simulate nbPaths 
     void generate(long nbPaths);
 
-    // renvoie le prix estime (moyenne des payoffs)
+    // Return the estimated option price
     double operator()() const;
 
-    // intervalle de confiance a 95%
-    std::vector<double> confidenceInterval() const;
+    // Return a 95% confidence interval
+    vector<double> confidenceInterval() const;
 
-    // renvoie le nombre de trajectoires simulees
+    // Return the number of simulated paths
     long getNbPaths() const;
 };
