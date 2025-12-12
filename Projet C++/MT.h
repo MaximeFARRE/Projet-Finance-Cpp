@@ -1,31 +1,14 @@
 #pragma once
-
 #include <random>
 
-// Singleton MT : générateur Mersenne-Twister unique dans tout le projet
 class MT {
 private:
-    // Le générateur aléatoire
-    std::mt19937 _gen;
+    static std::mt19937 _gen;
+    static bool _isInit;
 
-    // Constructeur privé : empêche la création directe d'objets MT
-    MT();
+    static void init();
 
 public:
-    // Accès à l'unique instance (Singleton)
-    static MT& getInstance();
-
-    // Interdit la copie
-    MT(const MT&) = delete;
-    MT& operator=(const MT&) = delete;
-
-    // Interdit le déplacement
-    MT(MT&&) = delete;
-    MT& operator=(MT&&) = delete;
-
-    // Génère un uniforme U ~ [0,1]
-    double rand_unif();
-
-    // Génère une normale Z ~ N(0,1)
-    double rand_norm();
+    static double rand_unif();
+    static double rand_norm();
 };
