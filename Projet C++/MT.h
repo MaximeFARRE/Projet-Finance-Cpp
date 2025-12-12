@@ -12,3 +12,4 @@ public:
     static double rand_unif();
     static double rand_norm();
 };
+//

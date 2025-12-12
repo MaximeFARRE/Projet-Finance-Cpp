@@ -7,3 +7,4 @@ public:
 
     virtual double payoff(double spot) const override;
 };
+//

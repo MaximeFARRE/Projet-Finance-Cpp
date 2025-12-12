@@ -24,3 +24,4 @@ public:
     // delta
     double delta();
 };
+//

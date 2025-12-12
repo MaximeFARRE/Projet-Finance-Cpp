@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-
+//
 class Option {
 private:
     double _expiry; // maturity time T

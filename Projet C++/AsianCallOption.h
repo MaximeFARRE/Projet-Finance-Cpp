@@ -10,3 +10,4 @@ public:
 
     virtual double payoff(double x) const override;
 };
+//

@@ -10,7 +10,7 @@ Option::Option(double expiry) : _expiry(expiry) {
 double Option::getExpiry() const {
     return _expiry;
 }
-
+//
 double Option::payoffPath(const std::vector<double>& pricePath) {
     // default: just use last price and call payoff(double)
     if (pricePath.empty()) {

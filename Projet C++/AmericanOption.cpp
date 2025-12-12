@@ -12,3 +12,4 @@ AmericanOption::AmericanOption(double expiry, double strike)
 bool AmericanOption::isAmericanOption() const {
     return true;
 }
+//

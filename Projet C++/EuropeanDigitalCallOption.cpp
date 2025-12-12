@@ -16,3 +16,4 @@ double EuropeanDigitalCallOption::payoff(double spot) const {
 EuropeanVanillaOption::optionType EuropeanDigitalCallOption::GetOptionType() const {
     return EuropeanVanillaOption::call;
 }
+//

@@ -40,3 +40,4 @@ public:
     // number of simulated paths
     int getNbPaths() const;
 };
+//

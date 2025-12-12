@@ -12,7 +12,7 @@ double CallOption::payoff(double spot) const {
     }
     return 0.0;
 }
-
+//
 EuropeanVanillaOption::optionType CallOption::GetOptionType() const {
     return EuropeanVanillaOption::call;
 }

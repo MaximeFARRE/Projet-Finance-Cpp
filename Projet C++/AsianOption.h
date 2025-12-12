@@ -19,3 +19,4 @@ public:
     // payoffPath for Asian: use average of the path
     virtual double payoffPath(const std::vector<double>& pricePath) override;
 };
+//

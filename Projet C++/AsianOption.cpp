@@ -31,3 +31,4 @@ double AsianOption::payoffPath(const std::vector<double>& pricePath) {
     double avg = sum / static_cast<double>(pricePath.size());
     return payoff(avg);
 }
+//

@@ -11,7 +11,7 @@ void MT::init() {
         _isInit = true;
     }
 }
-
+//
 double MT::rand_unif() {
     init();
     std::uniform_real_distribution<double> dist(0.0, 1.0);

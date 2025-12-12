@@ -70,7 +70,7 @@ CRRPricer::CRRPricer(Option* option, int depth,
     _priceTree.setDepth(_depth);
     _exerciseTree.setDepth(_depth);
 }
-
+//
 void CRRPricer::buildStockTree(BinaryTree<double>& stockTree) const {
     stockTree.setDepth(_depth);
 
