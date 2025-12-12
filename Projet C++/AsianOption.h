@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Option.h"
 #include <vector>
 #include <algorithm>

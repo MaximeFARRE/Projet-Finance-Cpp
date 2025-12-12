@@ -1,0 +1,13 @@
+Personne 4 – Options asiatiques + Monte Carlo
+
+Partie III – Options de chemin + MC
+
+AsianOption.h + AsianOption.cpp
+
+AsianCallOption.h + AsianCallOption.cpp
+
+AsianPutOption.h + AsianPutOption.cpp
+
+MT.h + MT.cpp (singleton Mersenne Twister)
+
+BlackScholesMCPricer.h + BlackScholesMCPricer.cpp
