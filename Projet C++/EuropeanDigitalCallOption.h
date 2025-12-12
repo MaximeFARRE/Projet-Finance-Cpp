@@ -1,6 +1,7 @@
 #pragma once
 #include "EuropeanDigitalOption.h"
 
+// Digital Call : payo = 1 si S >= K, 0 sinon
 class EuropeanDigitalCallOption : public EuropeanDigitalOption {
 public:
     EuropeanDigitalCallOption(double expiry, double strike);

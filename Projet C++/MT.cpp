@@ -1,25 +1,30 @@
 #include "MT.h"
 #include <ctime>
 
-std::mt19937 MT::_gen;
-bool MT::_isInit = false;
-
-void MT::init() {
-    if (!_isInit) {
-        unsigned int seed = static_cast<unsigned int>(std::time(nullptr));
-        _gen.seed(seed);
-        _isInit = true;
-    }
+// Private constructor
+MT::MT()
+{
+    std::random_device rd;
+    _gen = std::mt19937(rd());
 }
-//
-double MT::rand_unif() {
-    init();
-    std::uniform_real_distribution<double> dist(0.0, 1.0);
+
+// Returns the unique instance of MT
+MT& MT::getInstance()
+{
+    static MT instance;
+    return instance;
+}
+
+// Generate a uniform random variable
+double MT::rand_unif()
+{
+    static std::uniform_real_distribution<double> dist(0.0, 1.0);
     return dist(_gen);
 }
 
-double MT::rand_norm() {
-    init();
-    std::normal_distribution<double> dist(0.0, 1.0);
+// Generate a normal random variable
+double MT::rand_norm()
+{
+    static std::normal_distribution<double> dist(0.0, 1.0);
     return dist(_gen);
 }
