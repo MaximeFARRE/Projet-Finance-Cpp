@@ -1,71 +1,61 @@
 #include "BinaryTree.h"
 #include <iostream>
 #include <stdexcept>
+using namespace std;
 
 template <class T>
 BinaryTree<T>::BinaryTree() {
     _depth = 0;
-}
-
-template <class T>
-int BinaryTree<T>::index(int n, int i) const {
-    // index de la ligne n : n*(n+1)/2
-    return (n * (n + 1)) / 2 + i;
+    _tree.resize(1);
+    _tree[0].resize(1);
 }
 
 template <class T>
 void BinaryTree<T>::setDepth(int depth) {
     if (depth < 0) {
-        throw std::invalid_argument("depth must be non-negative");
+        throw invalid_argument("depth must be non-negative");
     }
-
     _depth = depth;
+    // resize : _tree[n] contains n+1 nodes
+    _tree.clear();
+    _tree.resize(_depth + 1);
 
-    // nombre total de noeuds: 1 + 2 + ... + (depth+1)
-    int total = (_depth + 1) * (_depth + 2) / 2;
-
-    _data.clear();
-    _data.resize(total);
-}
-
-template <class T>
-int BinaryTree<T>::getDepth() const {
-    return _depth;
+    for (int n = 0; n <= _depth; n++) {
+        _tree[n].resize(n + 1);
+    }
 }
 
 template <class T>
 void BinaryTree<T>::setNode(int n, int i, const T& value) {
-    _data[index(n, i)] = value;
+    // check indices
+    if (n < 0 || n > _depth || i < 0 || i > n) {
+        throw out_of_range("index out of range");
+    }
+    _tree[n][i] = value;
 }
 
 template <class T>
 T BinaryTree<T>::getNode(int n, int i) const {
-    return _data[index(n, i)];
+    // check indices
+    if (n < 0 || n > _depth || i < 0 || i > n) {
+        throw out_of_range("index out of range");
+    }
+    return _tree[n][i];
 }
 
 template <class T>
 void BinaryTree<T>::display() const {
-    // affichage "en arbre" simple (indentation)
+    // level-order print
     for (int n = 0; n <= _depth; n++) {
-        // espaces au début pour centrer un peu
         for (int s = 0; s < (_depth - n); s++) {
-            std::cout << "  ";
+            cout << "  ";
         }
-
         for (int i = 0; i <= n; i++) {
-            std::cout << getNode(n, i);
+            cout << _tree[n][i];
             if (i < n) {
-                std::cout << "   ";
+                cout << "   ";
             }
         }
-        std::cout << std::endl;
+        cout << endl;
     }
 }
-
-/*
-  IMPORTANT :
-  On force la génération du code pour les types qu'on utilise dans le projet.
-  Dans votre CRRPricer, vous utilisez BinaryTree<double> et BinaryTree<bool>.
-*/
-template class BinaryTree<double>;
-template class BinaryTree<bool>;
