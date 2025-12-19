@@ -7,10 +7,7 @@
 
 //  CONSTRUCTOR
 
-BlackScholesMCPricer::BlackScholesMCPricer(Option* option,
-                                           double initial_price,
-                                           double interest_rate,
-                                           double volatility)
+BlackScholesMCPricer::BlackScholesMCPricer(Option* option, double initial_price, double interest_rate, double volatility)
     : _option(option),
       _S0(initial_price),
       _r(interest_rate),

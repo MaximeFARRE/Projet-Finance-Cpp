@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 
+using namespace std;
+
 class Option {
 private:
     double _expiry; // maturity time T
@@ -19,7 +21,7 @@ public:
 
     // payoff with a full path (for path dependent options)
     // default: use only the last price in the path
-    virtual double payoffPath(const std::vector<double>& pricePath);
+    virtual double payoffPath(const vector<double>& pricePath) const;
 
     // flags for option type
     virtual bool isAsianOption() const;

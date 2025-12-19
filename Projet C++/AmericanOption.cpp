@@ -1,14 +1,21 @@
 #include "AmericanOption.h"
 #include <stdexcept>
 
-AmericanOption::AmericanOption(double expiry, double strike)
-    : Option(expiry), _strike(strike) {
+using namespace std;
 
-    if (expiry < 0.0 || strike < 0.0) {
-        throw std::invalid_argument("expiry and strike must be non-negative");
+// Contructor
+AmericanOption::AmericanOption(double expiry, double strike) : Option(expiry), _strike(strike) {
+    // Check that the strike is valid
+    if (strike < 0.0) {
+        throw invalid_argument("strike must be non negative");
     }
 }
-
+// This method indicates that the option is American or not
 bool AmericanOption::isAmericanOption() const {
     return true;
+}
+
+// Getter 
+double AmericanOption::getStrike() const {
+    return _strike;
 }
