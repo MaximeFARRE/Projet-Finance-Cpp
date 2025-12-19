@@ -18,7 +18,9 @@ public:
     EuropeanVanillaOption(double expiry, double strike);
 
     // Getter sur le strike
-    double getStrike() const { return _strike; }
+    double getStrike() const { 
+        return _strike; 
+    }
 
     // Chaque option devra indiquer si elle est call ou put
     virtual optionType GetOptionType() const = 0;

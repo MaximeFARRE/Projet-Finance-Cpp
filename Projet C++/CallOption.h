@@ -3,7 +3,8 @@
 #include "EuropeanVanillaOption.h"
 
 // Option européenne de type Call
-class CallOption : public EuropeanVanillaOption {
+class CallOption : public EuropeanVanillaOption 
+{
 public:
     // Constructeur : passe expiry et strike à la classe mère
     CallOption(double expiry, double strike);

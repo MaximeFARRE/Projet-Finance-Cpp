@@ -2,10 +2,8 @@
 #include <algorithm> // pour std::max
 
 // Constructeur : transmet expiry et strike à EuropeanVanillaOption
-PutOption::PutOption(double expiry, double strike)
-    : EuropeanVanillaOption(expiry, strike)
-{
-}
+PutOption::PutOption(double expiry, double strike) : EuropeanVanillaOption(expiry, strike)
+{}
 
 // Type de l'option : put
 EuropeanVanillaOption::optionType PutOption::GetOptionType() const {
