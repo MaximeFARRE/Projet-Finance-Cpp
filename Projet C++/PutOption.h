@@ -2,15 +2,15 @@
 
 #include "EuropeanVanillaOption.h"
 
-// Option européenne de type Put
+// European put-type option
 class PutOption : public EuropeanVanillaOption {
 public:
-    // Constructeur : passe expiry et strike à la classe mère
+    // Constructor: passes expiry and strike to the base class
     PutOption(double expiry, double strike);
 
-    // Indique que c'est un put
+    // Indicates that this is a put option
     virtual optionType GetOptionType() const override;
 
-    // Payoff du put : max(K - S, 0)
+    // Put payoff: max(K - S, 0)
     virtual double payoff(double z) const override;
 };

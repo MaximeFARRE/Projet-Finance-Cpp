@@ -2,16 +2,15 @@
 
 #include "EuropeanVanillaOption.h"
 
-// Option européenne de type Call
-class CallOption : public EuropeanVanillaOption 
-{
+// European call option
+class CallOption : public EuropeanVanillaOption {
 public:
-    // Constructeur : passe expiry et strike à la classe mère
+    // Constructor: passes expiry and strike to the base class
     CallOption(double expiry, double strike);
 
-    // Indique que c'est un call
+    // Indicates that this is a call option
     virtual optionType GetOptionType() const override;
 
-    // Payoff du call : max(S - K, 0)
+    // Call payoff : max(S - K, 0)
     virtual double payoff(double z) const override;
 };

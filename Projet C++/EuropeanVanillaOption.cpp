@@ -3,7 +3,7 @@
 
 using namespace std;
 
-// Constructeur : vérifie que expiry et strike sont >= 0
+// Constructor: checks that expiry and strike are >= 0
 EuropeanVanillaOption::EuropeanVanillaOption(double expiry, double strike) : Option(expiry), _strike(strike)
 {
     if (expiry < 0.0 || strike < 0.0) {

@@ -1,18 +1,18 @@
 #include "Option.h"
 
-// Constructeur de la classe Option
-// Initialise la maturité de l'option
+// Constructor of the Option class
+// Initializes the option's maturity
 Option::Option(double expiry): _expiry(expiry)
 {}
 
-// Retourne la maturité (date d'expiration) de l'option
+// Returns the option's maturity (expiration date)
 double Option::getExpiry() const {
     return _expiry;
 }
 
-// Calcule le payoff de l'option à partir d'un chemin de prix
-// path : vecteur contenant l'évolution du prix du sous-jacent
-// Le payoff dépend uniquement du prix final (à maturité)
+// Calculates the option's payoff from a price path
+// path: vector containing the evolution of the underlying asset's price
+// The payoff depends only on the final price (at maturity)
 double Option::payoffPath(const std::vector<double>& path) const {
     return payoff(path.back());
 }
