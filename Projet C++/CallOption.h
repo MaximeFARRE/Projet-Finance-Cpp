@@ -1,5 +1,4 @@
 #pragma once
-
 #include "EuropeanVanillaOption.h"
 
 // European call option
@@ -14,3 +13,4 @@ public:
     // Call payoff : max(S - K, 0)
     virtual double payoff(double z) const override;
 };
+//

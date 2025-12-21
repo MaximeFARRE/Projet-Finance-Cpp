@@ -1,15 +1,18 @@
 #pragma once
-
 #include "AsianOption.h"
-#include <algorithm>
+#include <vector>
+using namespace std;
 
+// Asian put option class
 class AsianPutOption : public AsianOption {
-public:
-    AsianPutOption(const std::vector<double>& timeSteps, double strike)
-        : AsianOption(timeSteps, strike) {
-    }
+private:
+    double _strike;
 
-    virtual double payoff(double x) const override {
-        return std::max(_strike - x, 0.0);
-    }
+public:
+    // Constructor
+    AsianPutOption(const vector<double>& timeSteps, double strike);
+
+    // Payoff of the Asian put
+    double payoff(double x) const override;
 };
+//

@@ -1,4 +1,5 @@
 #include "Option.h"
+#include <stdexcept>
 
 // Constructor of the Option class
 // Initializes the option's maturity

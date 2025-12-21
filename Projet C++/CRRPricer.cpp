@@ -1,213 +1,155 @@
 #include "CRRPricer.h"
-#include "AmericanOption.h"
 #include <cmath>
 #include <stdexcept>
-#include <algorithm>
 
-// Prix de l'actif au noeud (n,i) : S(n,i) = S0 (1+U)^i (1+D)^(n-i)
-double CRRPricer::stockPrice(int n, int i) const {
-    double upFactor = std::pow(1.0 + _U, i);
-    double downFactor = std::pow(1.0 + _D, n - i);
-    return _S0 * upFactor * downFactor;
-}
+using namespace std;
 
-// Constructeur principal : on donne U, D, R
-CRRPricer::CRRPricer(Option* option,
-    int depth,
-    double asset_price,
-    double up,
-    double down,
-    double interest_rate)
-    : _option(option),
-    _depth(depth),
-    _S0(asset_price),
-    _U(up),
-    _D(down),
-    _R(interest_rate),
-    _tree(),
-    _exercise(),
-    _computed(false)
-{
-    if (_option == nullptr) {
-        throw std::invalid_argument("Option pointer cannot be null");
+CRRPricer::CRRPricer(Option* option, int depth, double asset_price, double up, double down, double interest_rate) : _option(option), _depth(depth), _S0(asset_price), _U(up), _D(down), _R(interest_rate), _computed(false) {
+
+    if (!_option) {
+        throw invalid_argument("option pointer is null");
+    }
+    if (depth < 0) {
+        throw invalid_argument("depth must be non-negative");
     }
 
-    // CRR ne traite pas les Asiatiques
+    // cannot price Asian options in CRR
     if (_option->isAsianOption()) {
-        throw std::invalid_argument("CRRPricer cannot price Asian options");
+        throw invalid_argument("CRRPricer cannot handle Asian options");
     }
 
-    if (_depth < 0) {
-        throw std::invalid_argument("Depth must be non-negative");
-    }
-
-    // Condition de non-arbitrage : D < R < U
     if (!(_D < _R && _R < _U)) {
-        throw std::invalid_argument("Arbitrage detected: need D < R < U");
+        throw invalid_argument("no-arbitrage condition not satisfied");
     }
 
-    _tree.setDepth(_depth);
-    _exercise.setDepth(_depth);
+    _priceTree.setDepth(_depth);
+    _exerciseTree.setDepth(_depth);
 }
 
-// Constructeur Black-Scholes approx : on donne r (continu) et sigma
-CRRPricer::CRRPricer(Option* option,
-    int depth,
-    double asset_price,
-    double r,
-    double volatility)
-    : _option(option),
-    _depth(depth),
-    _S0(asset_price),
-    _U(0.0),
-    _D(0.0),
-    _R(0.0),
-    _tree(),
-    _exercise(),
-    _computed(false)
-{
-    if (_option == nullptr) {
-        throw std::invalid_argument("Option pointer cannot be null");
+CRRPricer::CRRPricer(Option* option, int depth, double asset_price, double r, double volatility) : _option(option), _depth(depth), _S0(asset_price), _computed(false) {
+
+    if (!_option) {
+        throw invalid_argument("option pointer is null");
+    }
+    if (depth <= 0) {
+        throw invalid_argument("depth must be positive");
     }
 
     if (_option->isAsianOption()) {
-        throw std::invalid_argument("CRRPricer cannot price Asian options");
-    }
-
-    if (_depth <= 0) {
-        throw std::invalid_argument("Depth must be positive");
+        throw invalid_argument("CRRPricer cannot handle Asian options");
     }
 
     double T = _option->getExpiry();
     double h = T / static_cast<double>(_depth);
 
-    // Paramètres binomiaux pour approx Black-Scholes (section 8 du sujet)
-    double sigma2 = volatility * volatility;
+    // CRR parameters from Black-Scholes limit
+    double u = exp(volatility * sqrt(h));
+    double d = 1.0 / u;
 
-    _U = std::exp((r + 0.5 * sigma2) * h + volatility * std::sqrt(h)) - 1.0;
-    _D = std::exp((r + 0.5 * sigma2) * h - volatility * std::sqrt(h)) - 1.0;
-    _R = std::exp(r * h) - 1.0;
-
-    // Vérification arbitrage
+    _U = u - 1.0;
+    _D = d - 1.0;
+    _R = exp(r * h) - 1.0;
     if (!(_D < _R && _R < _U)) {
-        throw std::invalid_argument("Arbitrage detected in BS approximation: need D < R < U");
+        throw invalid_argument("no-arbitrage condition not satisfied");
+    }
+    
+    if (!(_D < _R && _R < _U)) {
+        throw invalid_argument("no-arbitrage condition not satisfied");
     }
 
-    _tree.setDepth(_depth);
-    _exercise.setDepth(_depth);
+    _priceTree.setDepth(_depth);
+    _exerciseTree.setDepth(_depth);
 }
 
-// Implémente la procédure CRR
-void CRRPricer::compute() {
-    double q = (_R - _D) / (_U - _D);
-    int N = _depth;
+void CRRPricer::buildStockTree(BinaryTree<double>& stockTree) const { stockTree.setDepth(_depth);
 
-    bool isAmerican = _option->isAmericanOption();
-
-    // 1) À maturité : même valeur que l'Européenne
-    for (int i = 0; i <= N; ++i) {
-        double SNi = stockPrice(N, i);
-        double payoffNi = _option->payoff(SNi);
-        _tree.setNode(N, i, payoffNi);
-
-        if (isAmerican) {
-            // à l'échéance, on exerce si payoff > 0 (intrinsic > 0)
-            _exercise.setNode(N, i, payoffNi > 0.0);
-        }
-        else {
-            _exercise.setNode(N, i, false);
+    for (int n = 0; n <= _depth; ++n) {
+        for (int i = 0; i <= n; ++i) {
+            double S = _S0* pow(1.0 + _U, i)  * pow(1.0 + _D, n - i);
+            stockTree.setNode(n, i, S);
         }
     }
+}
 
-    // 2) Backward induction
-    for (int n = N - 1; n >= 0; --n) {
+void CRRPricer::compute() {
+    BinaryTree<double> stockTree;
+    buildStockTree(stockTree);
+
+    double q = (_R - _D) / (_U - _D);
+    double disc = 1.0 / (1.0 + _R);
+    bool american = _option->isAmericanOption();
+
+    // terminal values
+    for (int i = 0; i <= _depth; ++i) {
+        double S = stockTree.getNode(_depth, i);
+        double value = _option->payoff(S);
+        _priceTree.setNode(_depth, i, value);
+        _exerciseTree.setNode(_depth, i, false);
+    }
+
+    // backward induction
+    for (int n = _depth - 1; n >= 0; --n) {
         for (int i = 0; i <= n; ++i) {
-            double H_up = _tree.getNode(n + 1, i + 1);
-            double H_down = _tree.getNode(n + 1, i);
+            double cont = (q * _priceTree.getNode(n + 1, i + 1) + (1.0 - q) * _priceTree.getNode(n + 1, i)) / (1.0 + _R);
 
-            double continuation = (q * H_up + (1.0 - q) * H_down) / (1.0 + _R);
+            double nodeVal = cont;
+            bool exercise = false;
 
-            if (!isAmerican) {
-                // Européenne : comme avant
-                _tree.setNode(n, i, continuation);
-                _exercise.setNode(n, i, false);
+            if (american) {
+                double S = stockTree.getNode(n, i);
+                double intrinsic = _option->payoff(S);
+                if (intrinsic >= cont) {
+                    nodeVal = intrinsic;
+                    exercise = true;
+                }
             }
-            else {
-                // Américaine : max(continuation, intrinsic)
-                double Sni = stockPrice(n, i);
-                double intrinsic = _option->payoff(Sni);
 
-                double Hni = std::max(continuation, intrinsic);
-                _tree.setNode(n, i, Hni);
-
-                bool exerciseHere = (intrinsic >= continuation);
-                _exercise.setNode(n, i, exerciseHere);
-            }
+            _priceTree.setNode(n, i, nodeVal);
+            _exerciseTree.setNode(n, i, exercise);
         }
     }
 
     _computed = true;
 }
 
-// Getter : H(n,i)
-double CRRPricer::get(int n, int i) const {
-    return _tree.getNode(n, i);
+double CRRPricer::get(int n, int i) {
+    return _priceTree.getNode(n, i);
 }
 
-// Getter : politique d'exercice
-bool CRRPricer::getExercise(int n, int i) const {
-    return _exercise.getNode(n, i);
+bool CRRPricer::getExercise(int n, int i) {
+    return _exerciseTree.getNode(n, i);
 }
 
-// Calcul de C(N,i) = "N choose i"
-static double binomialCoeff(int N, int i) {
-    if (i < 0 || i > N) return 0.0;
-    if (i == 0 || i == N) return 1.0;
-
-    double result = 1.0;
-    int k = std::min(i, N - i);
-    for (int j = 1; j <= k; ++j) {
-        result *= (N - k + j);
-        result /= j;
-    }
-    return result;
-}
-
-// Prix de l'option
 double CRRPricer::operator()(bool closed_form) {
-    int N = _depth;
-    double q = (_R - _D) / (_U - _D);
-
-    bool isAmerican = _option->isAmericanOption();
-
-    if (isAmerican) {
-        // Pas de closed-form pour les Américaines
-        if (!_computed) {
-            compute();
+    if (closed_form) {
+        if (_option->isAmericanOption()) {
+            throw invalid_argument("closed_form not available for American options");
         }
-        return _tree.getNode(0, 0);
-    }
+        BinaryTree<double> stockTree;
+        buildStockTree(stockTree);
 
-    // Européenne
-    if (!closed_form) {
-        if (!_computed) {
-            compute();
-        }
-        return _tree.getNode(0, 0);
-    }
-    else {
-        double discount = std::pow(1.0 + _R, N);
+        double q = (_R - _D) / (_U - _D);
         double sum = 0.0;
 
-        for (int i = 0; i <= N; ++i) {
-            double comb = binomialCoeff(N, i);
-            double prob = std::pow(q, i) * std::pow(1.0 - q, N - i);
-            double SNi = stockPrice(N, i);
-            double payoffNi = _option->payoff(SNi);
+        for (int i = 0; i <= _depth; ++i) {
+            double S = stockTree.getNode(_depth, i);
+            double h = _option->payoff(S);
 
-            sum += comb * prob * payoffNi;
+            // simple binomial coefficient C(N, i)
+            double comb = 1.0;
+            for (int k = 1; k <= i; ++k) {
+                comb *= static_cast<double>(_depth - k + 1)/ static_cast<double>(k);
+            }
+
+            sum += comb* pow(q, i) * pow(1.0 - q, _depth - i)* h;
         }
 
-        return sum / discount;
+        double disc = pow(1.0 + _R, _depth);
+        return sum / disc;
     }
+
+    if (!_computed) {
+        compute();
+    }
+    return _priceTree.getNode(0, 0);
 }

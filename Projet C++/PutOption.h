@@ -1,5 +1,4 @@
 #pragma once
-
 #include "EuropeanVanillaOption.h"
 
 // European put-type option
@@ -14,3 +13,4 @@ public:
     // Put payoff: max(K - S, 0)
     virtual double payoff(double z) const override;
 };
+//

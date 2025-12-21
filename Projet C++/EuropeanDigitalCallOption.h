@@ -1,14 +1,14 @@
 #pragma once
-
 #include "EuropeanDigitalOption.h"
 
-// Digital Call : payo� = 1 si S >= K, 0 sinon
+// EuropeanDigitalCallOption is a child class of EuropeanDigitalOption
 class EuropeanDigitalCallOption : public EuropeanDigitalOption {
 public:
+    // Constructor
     EuropeanDigitalCallOption(double expiry, double strike);
-
-    virtual OptionType GetOptionType() const override;
-
-    // h(z) = 1_{z >= K}
-    virtual double payoff(double z) const override;
+    // Payoff function
+    double payoff(double spot) const override;
+    // Return the option type
+    optionType GetOptionType() const override;
 };
+//

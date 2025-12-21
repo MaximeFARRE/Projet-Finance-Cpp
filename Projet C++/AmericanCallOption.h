@@ -1,16 +1,13 @@
 #pragma once
-
 #include "AmericanOption.h"
-#include <algorithm>
 
+// AmericanCallOption is a child class of AmericanOption
 class AmericanCallOption : public AmericanOption {
 public:
-    AmericanCallOption(double expiry, double strike)
-        : AmericanOption(expiry, strike) {
-    }
+    // Constructor
+    AmericanCallOption(double expiry, double strike);
 
-    virtual double payoff(double S) const override {
-        return std::max(S - _strike, 0.0);
-    }
+    // Payoff function 
+    virtual double payoff(double spot) const override;
 };
-
+//

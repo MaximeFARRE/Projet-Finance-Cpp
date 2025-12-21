@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vector>
 
 // Abstract base class for all options
@@ -8,8 +7,12 @@ protected:
     double _expiry;   // Maturity T
 
 public:
-    explicit Option(double expiry);
+    // constructor: set expiry
+    Option(double expiry);
+    // destructeur
+    virtual ~Option() {}
 
+    // getter on expiry
     double getExpiry() const;
 
     // Payoff h(z) of the option
@@ -22,5 +25,5 @@ public:
     // Payoff computed from a path (default: payoff at the last point)
     virtual double payoffPath(const std::vector<double>& path) const;
 
-    virtual ~Option() = default;
+    
 };

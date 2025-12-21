@@ -1,15 +1,20 @@
 #include "EuropeanDigitalCallOption.h"
 
-EuropeanDigitalCallOption::EuropeanDigitalCallOption(double expiry, double strike)
-    : EuropeanDigitalOption(expiry, strike)
-{
+using namespace std;
+
+// Constructor for a European digital call option
+EuropeanDigitalCallOption::EuropeanDigitalCallOption(double expiry, double strike) : EuropeanDigitalOption(expiry, strike){}
+
+// If the option is in the money, the payoff is 1, Otherwise, the payoff is 0
+double EuropeanDigitalCallOption::payoff(double spot) const {
+    if (spot >= _strike) {
+        return 1.0;
+    }
+    return 0.0;
 }
 
-EuropeanDigitalOption::OptionType EuropeanDigitalCallOption::GetOptionType() const {
-    return OptionType::call;
+// Return the type of the option
+EuropeanDigitalOption::optionType EuropeanDigitalCallOption::GetOptionType() const {
+    return call;
 }
-
-double EuropeanDigitalCallOption::payoff(double z) const {
-    // Digital Call : paye 1 si z >= K, 0 sinon
-    return (z >= getStrike()) ? 1.0 : 0.0;
-}
+//

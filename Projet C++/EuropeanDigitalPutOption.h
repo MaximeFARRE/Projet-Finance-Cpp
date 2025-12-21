@@ -1,14 +1,17 @@
 #pragma once
-
 #include "EuropeanDigitalOption.h"
 
-// Digital Put : payo� = 1 si S <= K, 0 sinon
+
+
 class EuropeanDigitalPutOption : public EuropeanDigitalOption {
 public:
+    // Constructor
     EuropeanDigitalPutOption(double expiry, double strike);
 
-    virtual OptionType GetOptionType() const override;
+    // Payoff function
+    double payoff(double spot) const override;
 
-    // h(z) = 1_{z <= K}
-    virtual double payoff(double z) const override;
+    // Return the option type
+    optionType GetOptionType() const override;
 };
+//

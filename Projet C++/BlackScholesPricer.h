@@ -2,38 +2,32 @@
 
 #include "EuropeanVanillaOption.h"
 #include "EuropeanDigitalOption.h"
-#include <cmath>
 
+// Black-Scholes pricer for European vanilla and digital options
 class BlackScholesPricer {
 private:
-    // Pour savoir quel type d'option on price
-    enum class OptionFamily { Vanilla, Digital };
+    EuropeanVanillaOption* vanillaOption;
+    EuropeanDigitalOption* digitalOption;
 
-    OptionFamily _family;
-
-    EuropeanVanillaOption* _vanillaOption;  // nullptr si digital
-    EuropeanDigitalOption* _digitalOption;  // nullptr si vanilla
-
-    double _S;      // prix spot S0
-    double _r;      // taux sans risque
-    double _sigma;  // volatilité
+    double assetPrice;
+    double interestRate;
+    double _volatility;
 
 public:
-    // Constructeur pour options vanilles (call/put classiques)
-    BlackScholesPricer(EuropeanVanillaOption* option,
-        double asset_price,
-        double interest_rate,
-        double volatility);
+    // Constructor for vanilla options
+    BlackScholesPricer(EuropeanVanillaOption* option, double asset_price, double interest_rate, double volatility);
 
-    // Surcharge pour options digitales
-    BlackScholesPricer(EuropeanDigitalOption* option,
-        double asset_price,
-        double interest_rate,
-        double volatility);
+    // Constructor for digital options
+    BlackScholesPricer(EuropeanDigitalOption* option, double asset_price, double interest_rate, double volatility);
 
-    // Renvoie le prix (formule de Black-Scholes)
-    double operator()();
+    // Return the option price
+    double operator()() const;
 
-    // Renvoie le Delta de l’option
-    double delta();
+    // Return the delta of the option
+    double delta() const;
+
+    // Normal distribution functions
+    static double normal_cdf(double x);
+    static double normal_pdf(double x);
 };
+//

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Option.h"
 
 // Abstract class for vanilla European options (call/put)
