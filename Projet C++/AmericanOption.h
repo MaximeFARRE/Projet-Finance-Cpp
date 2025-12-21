@@ -16,3 +16,4 @@ public:
     // Getter
     double getStrike() const;
 };
+//

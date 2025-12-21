@@ -10,3 +10,4 @@ public:
     // Payoff function 
     virtual double payoff(double spot) const override;
 };
+//

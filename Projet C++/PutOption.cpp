@@ -12,7 +12,7 @@ double PutOption::payoff(double spot) const {
     }
     return 0.0;
 }
-
+//
 EuropeanVanillaOption::optionType PutOption::GetOptionType() const {
     return EuropeanVanillaOption::put;
 }

@@ -11,3 +11,4 @@ public:
     // Return the option type
     optionType GetOptionType() const override;
 };
+//

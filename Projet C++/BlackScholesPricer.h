@@ -30,3 +30,4 @@ public:
     static double normal_cdf(double x);
     static double normal_pdf(double x);
 };
+//

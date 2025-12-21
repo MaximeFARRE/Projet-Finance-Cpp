@@ -18,3 +18,4 @@ double EuropeanDigitalPutOption::payoff(double spot) const {
 EuropeanDigitalOption::optionType EuropeanDigitalPutOption::GetOptionType() const {
     return put;
 }
+//

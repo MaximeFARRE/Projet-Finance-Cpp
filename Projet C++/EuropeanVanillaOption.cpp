@@ -8,3 +8,4 @@ EuropeanVanillaOption::EuropeanVanillaOption(double expiry, double strike)
         throw std::invalid_argument("expiry and strike must be non-negative");
     }
 }
+//
