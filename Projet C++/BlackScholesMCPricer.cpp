@@ -6,7 +6,7 @@
 #include <iostream>
 
 //  CONSTRUCTOR
-//
+// 
 BlackScholesMCPricer::BlackScholesMCPricer(Option* option,
                                            double initial_price,
                                            double interest_rate,
