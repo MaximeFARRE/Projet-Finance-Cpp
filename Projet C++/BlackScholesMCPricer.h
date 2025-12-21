@@ -5,7 +5,7 @@
 using namespace std;
 
 // Monte Carlo pricer for Black-Scholes model
-class BlackScholesMCPricer
+class BlackScholesMCPricer 
 {
 private:
     Option* _option;              
