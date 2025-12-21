@@ -1,21 +1,29 @@
 #pragma once
 #include "Option.h"
 #include <vector>
+#include <stdexcept>
+using namespace std;
 
+// Base class for Asian options 
 class AsianOption : public Option {
 protected:
-    std::vector<double> _timeSteps;
+    vector<double> _timeSteps;  // Time points where the asset is observed
+    double _strike;                  // Strike price
 
 public:
-    // constructor: takes all time steps t1,...,tm
-    AsianOption(const std::vector<double>& timeSteps);
+    // Constructor
+    AsianOption(const vector<double>& timeSteps, double strike);
 
-    // getter on time steps
-    const std::vector<double>& getTimeSteps() const;
+    // isAsianOption override
+    bool isAsianOption() const override { return true; }
 
-    // asian flag
-    virtual bool isAsianOption() const override;
+    // time steps getter
+    const vector<double>& getTimeSteps() const { return _timeSteps; }
 
-    // payoffPath for Asian: use average of the path
-    virtual double payoffPath(const std::vector<double>& pricePath) override;
+    // Computes payoff on a path
+    double payoffPath(const vector<double>& path) const override;
+
+    // Payoff function
+    virtual double payoff(double x) const = 0;
 };
+//

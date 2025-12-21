@@ -1,6 +1,6 @@
 #pragma once
 #include "Option.h"
-
+//
 class EuropeanVanillaOption : public Option {
 public:
     enum optionType { call, put };

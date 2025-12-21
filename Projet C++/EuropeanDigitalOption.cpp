@@ -3,3 +3,4 @@
 EuropeanDigitalOption::EuropeanDigitalOption(double expiry, double strike)
     : EuropeanVanillaOption(expiry, strike) {
 }
+//

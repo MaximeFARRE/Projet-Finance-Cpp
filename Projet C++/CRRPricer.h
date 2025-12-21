@@ -39,3 +39,4 @@ public:
     // Return the price
     double operator()(bool closed_form = false);
 };
+//

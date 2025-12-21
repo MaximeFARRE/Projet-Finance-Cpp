@@ -1,33 +1,30 @@
 #include "AsianOption.h"
-#include <stdexcept>
+#include <numeric>     
+using namespace std;
 
-AsianOption::AsianOption(const std::vector<double>& timeSteps)
+// Constructor
+AsianOption::AsianOption(const vector<double>& timeSteps, double strike)
     : Option(timeSteps.empty() ? 0.0 : timeSteps.back()),
-      _timeSteps(timeSteps) {
-
-    if (_timeSteps.empty()) {
-        throw std::invalid_argument("time step vector must not be empty");
+      _timeSteps(timeSteps),
+      _strike(strike)
+{
+    if (timeSteps.empty()) {
+        throw invalid_argument("invalid timeSteps empty");
+    }
+    if (strike < 0.0) {
+        throw invalid_argument("strike negative not valid");
     }
 }
 
-const std::vector<double>& AsianOption::getTimeSteps() const {
-    return _timeSteps;
-}
-
-bool AsianOption::isAsianOption() const {
-    return true;
-}
-
-double AsianOption::payoffPath(const std::vector<double>& pricePath) {
-    // average all prices then use payoff(double)
-    if (pricePath.empty()) {
-        return 0.0;
+// Computes payoff from the whole path by averaging the values
+double AsianOption::payoffPath(const vector<double>& path) const {
+    if (path.size() != _timeSteps.size()) {
+        throw invalid_argument("path invalid");
     }
 
-    double sum = 0.0;
-    for (size_t i = 0; i < pricePath.size(); ++i) {
-        sum += pricePath[i];
-    }
-    double avg = sum / static_cast<double>(pricePath.size());
-    return payoff(avg);
+    // Compute the mean value of the price path
+    double sum = accumulate(path.begin(), path.end(), 0.0);
+    double mean = sum / path.size();
+
+    return payoff(mean);
 }
