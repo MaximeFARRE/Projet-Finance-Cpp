@@ -1,11 +1,10 @@
 #pragma once
 #include <vector>
 
-using namespace std;
-
+// Abstract base class for all options
 class Option {
-private:
-    double _expiry; // maturity time T
+protected:
+    double _expiry;   // Maturity T
 
 public:
     // constructor: set expiry
@@ -16,16 +15,15 @@ public:
     // getter on expiry
     double getExpiry() const;
 
-    // basic payoff with only final price
-    virtual double payoff(double spot) const = 0;
+    // Payoff h(z) of the option
+    virtual double payoff(double z) const = 0;
 
-    // payoff with a full path (for path dependent options)
-    // default: use only the last price in the path
-    virtual double payoffPath(const vector<double>& pricePath) const;
+    // By default: not Asian, not American
+    virtual bool isAsianOption() const { return false; }
+    virtual bool isAmericanOption() const { return false; }
 
-    // flags for option type
-    virtual bool isAsianOption() const;
-    virtual bool isAmericanOption() const;
+    // Payoff computed from a path (default: payoff at the last point)
+    virtual double payoffPath(const std::vector<double>& path) const;
 
     
 };

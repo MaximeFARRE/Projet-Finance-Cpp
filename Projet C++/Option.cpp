@@ -1,29 +1,19 @@
 #include "Option.h"
 #include <stdexcept>
 
-using namespace std;
+// Constructor of the Option class
+// Initializes the option's maturity
+Option::Option(double expiry): _expiry(expiry)
+{}
 
-Option::Option(double expiry) : _expiry(expiry) {
-    if (expiry < 0.0) {
-        throw std::invalid_argument("expiry must be non-negative");
-    }
-}
-
+// Returns the option's maturity (expiration date)
 double Option::getExpiry() const {
     return _expiry;
 }
 
-double Option::payoffPath(const std::vector<double>& pricePath) const {
-    if (pricePath.empty()) {
-        throw invalid_argument("pricePath is empty");
-    }
-    return payoff(pricePath.back());
-}
-
-bool Option::isAsianOption() const {
-    return false;
-}
-
-bool Option::isAmericanOption() const {
-    return false;
+// Calculates the option's payoff from a price path
+// path: vector containing the evolution of the underlying asset's price
+// The payoff depends only on the final price (at maturity)
+double Option::payoffPath(const std::vector<double>& path) const {
+    return payoff(path.back());
 }
