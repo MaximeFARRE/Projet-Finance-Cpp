@@ -6,7 +6,7 @@
 #include <iostream>
 using namespace std;
 
-//constructor
+//constructor 
 BlackScholesMCPricer::BlackScholesMCPricer(Option* option,
                                            double initial_price,
                                            double interest_rate,
