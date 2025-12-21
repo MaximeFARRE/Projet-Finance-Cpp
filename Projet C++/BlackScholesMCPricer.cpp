@@ -4,158 +4,163 @@
 
 #include <cmath>
 #include <iostream>
+using namespace std;
 
-//  CONSTRUCTOR
-// 
-BlackScholesMCPricer::BlackScholesMCPricer(Option* option,
-                                           double initial_price,
-                                           double interest_rate,
-                                           double volatility)
+//constructor 
+BlackScholesMCPricer::BlackScholesMCPricer(Option* option, double initial_price, double interest_rate, double volatility)
     : _option(option),
-      _S0(initial_price),
-      _r(interest_rate),
-      _sigma(volatility),
+      _S0(S0),
+      _r(r),
+      _sigma(sigma),
       _nbPaths(0),
       _sumPayoff(0.0),
       _sumPayoffSquared(0.0)
 {
     if (_option == nullptr)
     {
-        std::cout << "Error: option = nullptr in BlackScholesMCPricer" << std::endl;
+        //  error case
+        cerr << "Error option is nullptr" << endl;
         return;
     }
 
-    // if it is an Asian option, we get all time steps
+    // If is an Asian option use fixing times
     if (_option->isAsianOption())
     {
-        AsianOption* asian = static_cast<AsianOption*>(_option);
-        _timeSteps = asian->getTimeSteps();
+        AsianOption* asian = dynamic_cast<AsianOption*>(_option);
+        if (asian != nullptr)
+        {
+            _timeSteps = asian->getTimeSteps();
+        }
     }
     else
     {
-        // European option: only maturity T
+        // European option
         double T = _option->getExpiry();
         _timeSteps.clear();
-        _timeSteps.push_back(T);
+        _timeSteps.push_back(T); //we keep the push_back for because it's only executed once here
     }
 }
 
-//  SIMULATE ONE PATH
 
-void BlackScholesMCPricer::simulateOnePath()
+//path generation
+void BlackScholesMCPricer::generate(long nbPaths)
 {
-    if (_option == nullptr) return;
+    if (nbPaths <= 0)
+        return;
 
-    double S = _S0;      // price at start
-    double prev_t = 0.0; // previous time
+    if (_option == nullptr)
+        return;
 
-    std::vector<double> path;
-    path.reserve(_timeSteps.size());
+    const size_t nSteps = _timeSteps.size();
+    if (nSteps == 0)
+        return;
 
-    for (std::size_t i = 0; i < _timeSteps.size(); ++i)
+    // random number generator
+    MT& mt = MT::getInstance();
+
+    // Reuse the same path vector for all simulations
+    vector<double> path(nSteps);
+
+    double S;
+    double prev_t;
+    double t;
+    double dt;
+    double Z;
+
+    // Simulate nbPaths trajectories
+    for (long pathIndex = 0; pathIndex < nbPaths; ++pathIndex)
     {
-        double t = _timeSteps[i];
-        double dt = t - prev_t;
+        S = _S0;       // starting price
+        prev_t = 0.0;  // previous time
 
-        if (dt > 0.0)
+        for (size_t i = 0; i < nSteps; ++i)
         {
-            // draw standard normal
-            double Z = MT::rand_norm();
+            t = _timeSteps[i];
+            dt = t - prev_t;
 
-            // drift and diffusion
-            double drift = (_r - 0.5 * _sigma * _sigma) * dt;
-            double diffusion = _sigma * std::sqrt(dt) * Z;
+            if (dt > 0.0)
+            {
+                // standard normal random variable
+                Z = mt.rand_norm();
 
-            // log-normal S_t
-            S = S * std::exp(drift + diffusion);
+                // Drift and diffusion in Black-Scholes model
+                double drift = (_r - 0.5 * _sigma * _sigma) * dt;
+                double diffusion = _sigma * sqrt(dt) * Z;
+
+                // Log-normal update for S_t
+                S = S * exp(drift + diffusion);
+            }
+
+            // Store price 
+            path[i] = S;
+            prev_t = t;
         }
 
-        path.push_back(S);
-        prev_t = t;
-    }
+        // Compute payoff for this path
+        double payoff = _option->payoffPath(path);
 
-    // payoff from the path
-    double payoff = _option->payoffPath(path);
-
-    // update stats (undiscounted payoff)
-    _nbPaths += 1;
-    _sumPayoff += payoff;
-    _sumPayoffSquared += payoff * payoff;
-}
-
-
-//  GENERATE MANY PATHS
-
-void BlackScholesMCPricer::generate(int nb_paths)
-{
-    if (nb_paths <= 0) return;
-
-    for (int i = 0; i < nb_paths; ++i)
-    {
-        simulateOnePath();
+        _nbPaths += 1;
+        _sumPayoff += payoff;
+        _sumPayoffSquared += payoff * payoff;
     }
 }
 
 
-//  PRICE (MEAN DISCOUNTED PAYOFF)
-
-double BlackScholesMCPricer::operator()()
+//MC pricer
+double BlackScholesMCPricer::operator()() const
 {
     if (_nbPaths == 0 || _option == nullptr)
         return 0.0;
 
-    double n = static_cast<double>(_nbPaths);
+    // Mean payoff
+    double meanPayoff = _sumPayoff / _nbPaths;
 
-    double meanPayoff = _sumPayoff / n;
-
+    // Discount to present value
     double T = _option->getExpiry();
-    double discount = std::exp(-_r * T);
+    double discount = exp(-_r * T);
 
     double price = discount * meanPayoff;
     return price;
 }
 
 
-//  CONFIDENCE INTERVAL 95%
-
-std::vector<double> BlackScholesMCPricer::confidenceInterval()
+//95% confidence interval
+vector<double> BlackScholesMCPricer::confidenceInterval() const
 {
-    std::vector<double> ci(2, 0.0);
+    vector<double> ci(2, 0.0);
 
-    if (_nbPaths <= 1 || _option == nullptr)
-    {
-        double p = (*this)();
-        ci[0] = p;
-        ci[1] = p;
-        return ci;
-    }
+    double n = _nbPaths;
 
-    double n = static_cast<double>(_nbPaths);
-
-    double meanPayoff  = _sumPayoff / n;
+    // E[X] and E[X^2]
+    double meanPayoff = _sumPayoff / n;
     double meanPayoff2 = _sumPayoffSquared / n;
 
+    // Variance of payoffs: Var(X) = E[X^2] - (E[X])^2
     double varPayoff = meanPayoff2 - meanPayoff * meanPayoff;
-    if (varPayoff < 0.0) varPayoff = 0.0;
+    if (varPayoff < 0.0)
+        varPayoff = 0.0;  //  safety
 
-    double stdPayoff = std::sqrt(varPayoff);
+    double stdPayoff = sqrt(varPayoff);  // standard deviation of payoffs
 
+    // Convert payoff statistics to price statistics (discounting)
     double T = _option->getExpiry();
-    double discount = std::exp(-_r * T);
+    double discount = exp(-_r * T);
 
     double price = discount * meanPayoff;
-    double stdPrice = discount * stdPayoff / std::sqrt(n);
 
-    double alpha = 1.96; // 95%
+    // Standard deviation of the mean price
+    double stdPrice = discount * stdPayoff / sqrt(n);
+
+    // 1.96 -> 95% CI for the mean
+    double alpha = 1.96;
     ci[0] = price - alpha * stdPrice;
     ci[1] = price + alpha * stdPrice;
 
     return ci;
 }
 
-//  NUMBER OF PATHS
-
-int BlackScholesMCPricer::getNbPaths() const
+//number of simulated paths
+long BlackScholesMCPricer::getNbPaths() const
 {
     return _nbPaths;
 }

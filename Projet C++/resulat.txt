@@ -1,0 +1,25 @@
+MC orginal option pricing results:
+
+100 000 simulations   
+European Call        : 10.800342   CI95 = [10.700525, 10.900159]
+European Call        : 10.756214   CI95 = [10.656360, 10.856069]
+European Call        : 10.895736   CI95 = [10.794746, 10.996727]	1,6 secondes
+European Call        : 10.809771   CI95 = [10.709727, 10.909815]    1,63 secondes	
+
+1 000 000 simulations : 
+
+European Call        : 10.838909   CI95 = [10.807192, 10.870626]	9,75 secondes
+European Call        : 10.813438   CI95 = [10.781764, 10.845112]	9,39 secondes
+European Call        : 10.790693   CI95 = [10.759037, 10.822350]	9,32 secondes
+
+MC avec antithetic variates:
+
+100 000 simulations :
+European Call        : 10.824582   CI95 = [10.771955, 10.877208]	2,73 secondes
+European Call        : 10.854346   CI95 = [10.801559, 10.907132]	2,34 secondes
+European Call        : 10.880020   CI95 = [10.826869, 10.933171]	2,32 secondes
+
+1 000 000 simulations :
+European Call        : 10.819121   CI95 = [10.802482, 10.835759]	15,95 secondes
+European Call        : 10.838068   CI95 = [10.821412, 10.854724]	15,60 secondes
+European Call        : 10.828984   CI95 = [10.812319, 10.845650]	16,10 secondes

@@ -135,4 +135,7 @@
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="resulat.txt" />
+  </ItemGroup>
 </Project>

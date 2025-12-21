@@ -2,42 +2,37 @@
 
 #include "Option.h"
 #include <vector>
+using namespace std;
 
-// Monte Carlo pricer under Black-Scholes model
-class BlackScholesMCPricer
+// Monte Carlo pricer for Black-Scholes model
+class BlackScholesMCPricer 
 {
 private:
-    Option* _option;              // pointer to option
-    double _S0;                   // initial price
-    double _r;                    // interest rate
+    Option* _option;              
+    double _S0;                   // initial spot price
+    double _r;                    // risk-free interest rate
     double _sigma;                // volatility
 
-    int _nbPaths;                 // number of simulated paths
-    double _sumPayoff;            // sum of payoffs
-    double _sumPayoffSquared;     // sum of payoffs^2 (for variance)
+    long _nbPaths;                // total number of simulated paths
+    double _sumPayoff;            
+    double _sumPayoffSquared;     
 
-    std::vector<double> _timeSteps;   // times of simulation
-
-    // simulate one path and update statistics
-    void simulateOnePath();
+    vector<double> _timeSteps;   // simulation dates
 
 public:
-    // constructor
-    BlackScholesMCPricer(Option* option,
-                         double initial_price,
-                         double interest_rate,
-                         double volatility);
+    // Constructor
+    BlackScholesMCPricer(Option* option, double S0, double r, double sigma);
 
-    // generate nb_paths trajectories
-    void generate(int nb_paths);
+    // Simulate nbPaths 
+    void generate(long nbPaths);
 
-    // estimated price (mean of discounted payoffs)
-    double operator()();
+    // Return the estimated option price
+    double operator()() const;
 
-    // confidence interval 95%
-    std::vector<double> confidenceInterval();
+    // Return a 95% confidence interval
+    vector<double> confidenceInterval() const;
 
-    // number of simulated paths
-    int getNbPaths() const;
+    // Return the number of simulated paths
+    long getNbPaths() const;
 };
 //
