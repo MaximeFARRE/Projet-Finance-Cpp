@@ -1,10 +1,25 @@
 #pragma once
-#include "EuropeanVanillaOption.h"
+#include "Option.h"
 
-// digital base class, similar to EuropeanVanillaOption
-class EuropeanDigitalOption : public EuropeanVanillaOption {
+// EuropeanDigitalOption is a child class of Option
+class EuropeanDigitalOption : public Option {
+protected:
+    double _strike;
+
 public:
+    // Constructor
     EuropeanDigitalOption(double expiry, double strike);
-
+    //Destructor
     virtual ~EuropeanDigitalOption() {}
+
+    // Getter
+    double getStrike() const;
+
+    enum optionType { call, put };
+    virtual optionType GetOptionType() const = 0;
+
+    // Allow the pricer to access the strike
+    friend class BlackScholesPricer;
 };
+
+

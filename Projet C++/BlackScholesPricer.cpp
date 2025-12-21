@@ -1,112 +1,183 @@
 #include "BlackScholesPricer.h"
-#include "EuropeanDigitalCallOption.h"
-#include "EuropeanDigitalPutOption.h"
-#include "CallOption.h"
-#include "PutOption.h"
 #include <cmath>
 #include <stdexcept>
 
-BlackScholesPricer::BlackScholesPricer(EuropeanVanillaOption* option,
-                                       double asset_price,
-                                       double interest_rate,
-                                       double volatility)
-    : _option(option),
-      _assetPrice(asset_price),
-      _interestRate(interest_rate),
-      _volatility(volatility) {
+using namespace std;
 
-    if (!_option) {
-        throw std::invalid_argument("option pointer is null");
+// Constant used for the normal pdf: 1 / sqrt(2*pi)
+static const double INV_SQRT_2PI = 0.3989422804014327;
+
+// Constructor for vanilla options
+BlackScholesPricer::BlackScholesPricer(EuropeanVanillaOption* option, double asset_price, double interest_rate, double volatility)
+{
+    vanillaOption = option;
+    digitalOption = nullptr;
+
+    assetPrice = asset_price;
+    interestRate = interest_rate;
+    _volatility = volatility;
+
+    if (vanillaOption == nullptr) {
+        throw invalid_argument("vanilla option pointer is null");
+    }
+    if (assetPrice <= 0.0) {
+        throw invalid_argument("asset price must be > 0");
+    }
+    if (_volatility < 0.0) {
+        throw invalid_argument("volatility must be >= 0");
     }
 }
 
-double BlackScholesPricer::normalCdf(double x) const {
-    // standard normal CDF using erfc
-    return 0.5 * std::erfc(-x / std::sqrt(2.0));
+// Constructor for digital options
+BlackScholesPricer::BlackScholesPricer(EuropeanDigitalOption* option, double asset_price, double interest_rate, double volatility)
+{
+    vanillaOption = nullptr;
+    digitalOption = option;
+
+    assetPrice = asset_price;
+    interestRate = interest_rate;
+    _volatility = volatility;
+
+    if (digitalOption == nullptr) {
+        throw invalid_argument("digital option pointer is null");
+    }
+    if (assetPrice <= 0.0) {
+        throw invalid_argument("asset price must be > 0");
+    }
+    if (_volatility < 0.0) {
+        throw invalid_argument("volatility must be >= 0");
+    }
 }
 
-double BlackScholesPricer::normalPdf(double x) const {
-    const double invSqrt2Pi = 1.0 / std::sqrt(2.0 * 3.141592653589793);
-    return invSqrt2Pi * std::exp(-0.5 * x * x);
+// Standard normal cdf
+double BlackScholesPricer::normal_cdf(double x) {
+    return 0.5 * erfc(-x / sqrt(2.0));
 }
 
-double BlackScholesPricer::operator()() {
-    double T = _option->getExpiry();
-    double K = _option->_strike; // friend access
-
-    if (T <= 0.0 || _volatility <= 0.0) {
-        // simple fallback
-        return std::exp(-_interestRate * T) * _option->payoff(_assetPrice);
-    }
-
-    double sqrtT = std::sqrt(T);
-    double d1 = (std::log(_assetPrice / K)
-                + (_interestRate + 0.5 * _volatility * _volatility) * T)
-                / (_volatility * sqrtT);
-    double d2 = d1 - _volatility * sqrtT;
-
-    bool isDigital = (dynamic_cast<EuropeanDigitalOption*>(_option) != nullptr);
-    EuropeanVanillaOption::optionType type = _option->GetOptionType();
-
-    double price = 0.0;
-
-    if (!isDigital) {
-        // vanilla call / put
-        if (type == EuropeanVanillaOption::call) {
-            price = _assetPrice * normalCdf(d1)
-                  - K * std::exp(-_interestRate * T) * normalCdf(d2);
-        } else {
-            price = K * std::exp(-_interestRate * T) * normalCdf(-d2)
-                  - _assetPrice * normalCdf(-d1);
-        }
-    } else {
-        // digital call / put
-        if (type == EuropeanVanillaOption::call) {
-            price = std::exp(-_interestRate * T) * normalCdf(d2);
-        } else {
-            price = std::exp(-_interestRate * T) * normalCdf(-d2);
-        }
-    }
-
-    return price;
+// Standard normal pdf
+double BlackScholesPricer::normal_pdf(double x) {
+    return INV_SQRT_2PI * exp(-0.5 * x * x);
 }
 
-double BlackScholesPricer::delta() {
-    double T = _option->getExpiry();
-    double K = _option->_strike;
-
-    if (T <= 0.0 || _volatility <= 0.0) {
-        return 0.0;
+// Pricing function 
+double BlackScholesPricer::operator()() const {
+    if (vanillaOption == nullptr && digitalOption == nullptr) {
+        throw runtime_error("no option set");
     }
 
-    double sqrtT = std::sqrt(T);
-    double d1 = (std::log(_assetPrice / K)
-                + (_interestRate + 0.5 * _volatility * _volatility) * T)
-                / (_volatility * sqrtT);
-    double d2 = d1 - _volatility * sqrtT;
+    // Time to maturity
+    double T = (vanillaOption != nullptr) ? vanillaOption->getExpiry() : digitalOption->getExpiry();
 
-    bool isDigital = (dynamic_cast<EuropeanDigitalOption*>(_option) != nullptr);
-    EuropeanVanillaOption::optionType type = _option->GetOptionType();
-
-    double d = 0.0;
-
-    if (!isDigital) {
-        if (type == EuropeanVanillaOption::call) {
-            d = normalCdf(d1);
-        } else {
-            d = normalCdf(d1) - 1.0;
-        }
-    } else {
-        double pdf_d2 = normalPdf(d2);
-        double factor = std::exp(-_interestRate * T)
-                        * pdf_d2
-                        / (_assetPrice * _volatility * sqrtT);
-        if (type == EuropeanVanillaOption::call) {
-            d = factor;
-        } else {
-            d = -factor;
-        }
+    if (T < 0.0) {
+        throw invalid_argument("expiry must be >= 0");
     }
 
-    return d;
+    // If maturity is now, price is just the payoff
+    if (T == 0.0) {
+        if (vanillaOption != nullptr) {
+            return vanillaOption->payoff(assetPrice);
+        }
+        return digitalOption->payoff(assetPrice);
+    }
+
+    // If volatility is 0, the path is deterministic
+    if (_volatility == 0.0) {
+        double discountFactor = exp(-interestRate * T);
+        double ST = assetPrice * exp(interestRate * T);
+
+        if (vanillaOption != nullptr) {
+            return discountFactor * vanillaOption->payoff(ST);
+        }
+        return discountFactor * digitalOption->payoff(ST);
+    }
+
+    // Common values
+    double sqrtT = sqrt(T);
+    double sigmaSqrtT = _volatility * sqrtT;
+    double discountFactor = exp(-interestRate * T);
+
+    // Vanilla option case
+    if (vanillaOption != nullptr) {
+        double K = vanillaOption->_strike;
+
+        if (K <= 0.0) {
+            throw invalid_argument("strike must be > 0");
+        }
+
+        double d1 = (log(assetPrice / K) + (interestRate + 0.5 * _volatility * _volatility) * T) / sigmaSqrtT;
+        double d2 = d1 - sigmaSqrtT;
+
+        if (vanillaOption->GetOptionType() == EuropeanVanillaOption::call) {
+            return assetPrice * normal_cdf(d1) - K * discountFactor * normal_cdf(d2);
+        }
+        return K * discountFactor * normal_cdf(-d2) - assetPrice * normal_cdf(-d1);
+    }
+
+    // Digital option case
+    double K = digitalOption->_strike;
+
+    if (K <= 0.0) {
+        throw invalid_argument("strike must be > 0");
+    }
+
+    double d2 = (log(assetPrice / K) + (interestRate - 0.5 * _volatility * _volatility) * T) / sigmaSqrtT;
+
+    if (digitalOption->GetOptionType() == EuropeanDigitalOption::call) {
+        return discountFactor * normal_cdf(d2);
+    }
+    return discountFactor * normal_cdf(-d2);
+}
+
+// Delta function (vanilla or digital)
+double BlackScholesPricer::delta() const {
+    if (vanillaOption == nullptr && digitalOption == nullptr) {
+        throw runtime_error("no option set");
+    }
+
+    double T = (vanillaOption != nullptr) ? vanillaOption->getExpiry() : digitalOption->getExpiry();
+
+    if (T < 0.0) {
+        throw invalid_argument("expiry must be >= 0");
+    }
+    if (T == 0.0) {
+        throw runtime_error("delta undefined at T=0");
+    }
+    if (_volatility == 0.0) {
+        throw runtime_error("delta undefined for sigma=0");
+    }
+
+    double sqrtT = sqrt(T);
+    double discountFactor = exp(-interestRate * T);
+
+    // Vanilla option delta
+    if (vanillaOption != nullptr) {
+        double K = vanillaOption->_strike;
+
+        if (K <= 0.0) {
+            throw invalid_argument("strike must be > 0");
+        }
+
+        double d1 = (log(assetPrice / K) + (interestRate + 0.5 * _volatility * _volatility) * T) / (_volatility * sqrtT);
+
+        if (vanillaOption->GetOptionType() == EuropeanVanillaOption::call) {
+            return normal_cdf(d1);
+        }
+        return normal_cdf(d1) - 1.0;
+    }
+
+    // Digital option delta
+    double K = digitalOption->_strike;
+
+    if (K <= 0.0) {
+        throw invalid_argument("strike must be > 0");
+    }
+
+    double d2 = (log(assetPrice / K) + (interestRate - 0.5 * _volatility * _volatility) * T) / (_volatility * sqrtT);
+
+    double digitalDelta = discountFactor * normal_pdf(d2) / (assetPrice * _volatility * sqrtT);
+
+    if (digitalOption->GetOptionType() == EuropeanDigitalOption::call) {
+        return digitalDelta;
+    }
+    return -digitalDelta;
 }
