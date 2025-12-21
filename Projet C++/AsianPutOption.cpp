@@ -1,13 +1,14 @@
 #include "AsianPutOption.h"
+#include <algorithm> 
+using namespace std;
 
-AsianPutOption::AsianPutOption(const std::vector<double>& timeSteps, double strike)
-    : AsianOption(timeSteps), _strike(strike) {
+// Constructor
+AsianPutOption::AsianPutOption(const vector<double>& timeSteps, double strike)
+    : AsianOption(timeSteps, strike)
+{
 }
 
+// Payoff of an Asian put
 double AsianPutOption::payoff(double x) const {
-    if (x < _strike) {
-        return _strike - x;
-    }
-    return 0.0;
+    return max(_strike - x, 0.0);
 }
-//

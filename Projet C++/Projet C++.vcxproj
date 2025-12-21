@@ -163,6 +163,9 @@
     <ClCompile Include="Option.cpp" />
     <ClCompile Include="PutOption.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="resulat.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

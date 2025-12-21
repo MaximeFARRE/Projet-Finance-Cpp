@@ -37,6 +37,8 @@ CRRPricer::CRRPricer(Option* option, int depth, double asset_price, double r, do
 
 void CRRPricer::compute() {
     double q = (_R - _D) / (_U - _D);
+    double disc = 1.0 / (1.0 + _R);
+    bool american = _option->isAmericanOption();
 
     // terminal payoffs
     for (int i = 0; i <= _depth; i++) {
