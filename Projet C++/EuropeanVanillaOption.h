@@ -1,22 +1,22 @@
 #pragma once
 #include "Option.h"
 
-// Abstract class for vanilla European options (call/put)
+// EuropeanVanillaOption is a child class of Option
 class EuropeanVanillaOption : public Option {
 public:
-    // option type : call or put
+    // option type 
     enum optionType { call, put };
 
 private:
-    double _strike;  // Strike price K
+    double _strike; 
     friend class BlackScholesPricer;
 
 
 public:
-    // Constructor : initialize expiry (T) and strike (K)
+    // Constructor 
     EuropeanVanillaOption(double expiry, double strike);
 
-    // Getter for the strike price
+    // Getter 
     double getStrike() const { 
         return _strike; 
     }

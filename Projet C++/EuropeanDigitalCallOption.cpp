@@ -2,10 +2,10 @@
 
 using namespace std;
 
-// Constructor for a European digital call option
+// Constructor 
 EuropeanDigitalCallOption::EuropeanDigitalCallOption(double expiry, double strike) : EuropeanDigitalOption(expiry, strike){}
 
-// If the option is in the money, the payoff is 1, Otherwise, the payoff is 0
+// If the option is in the money, the payoff is 1 otherwise the payoff is 0
 double EuropeanDigitalCallOption::payoff(double spot) const {
     if (spot >= _strike) {
         return 1.0;

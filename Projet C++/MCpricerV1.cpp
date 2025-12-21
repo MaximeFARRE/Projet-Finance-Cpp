@@ -33,6 +33,7 @@ double prix_call_mc(double S0, double K, double r, double sigma, double T, int N
     return prix;
 }
 
+
 int main()
 {
     double S0 = 100;
@@ -48,3 +49,5 @@ int main()
 
     return 0;
 }
+
+

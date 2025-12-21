@@ -4,7 +4,7 @@
 
 using namespace std;
 
-// Constant used for the normal pdf: 1 / sqrt(2*pi)
+// Constant used for the normal pdf
 static const double INV_SQRT_2PI = 0.3989422804014327;
 
 // Constructor for vanilla options

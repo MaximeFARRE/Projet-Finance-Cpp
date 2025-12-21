@@ -2,7 +2,7 @@
 #include "EuropeanDigitalOption.h"
 
 
-
+// EuropeanDigitalPutOption is a child class of EuropeanDigitalOption
 class EuropeanDigitalPutOption : public EuropeanDigitalOption {
 public:
     // Constructor

@@ -3,7 +3,7 @@
 #include "AsianOption.h"
 using namespace std;
 
-// call class for Asian options
+// AsianCallOption is a child class of AsianOption
 class AsianCallOption : public AsianOption {
 private:
     double _strike;

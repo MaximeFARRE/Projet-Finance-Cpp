@@ -1,16 +1,15 @@
 #pragma once
 #include "EuropeanVanillaOption.h"
 
-// European put-type option
+// PutOption is a child class of EuropeanVanillaOption
 class PutOption : public EuropeanVanillaOption {
 public:
-    // Constructor: passes expiry and strike to the base class
+    // Constructor
     PutOption(double expiry, double strike);
 
-    // Indicates that this is a put option
+    // getter
     virtual optionType GetOptionType() const override;
 
-    // Put payoff: max(K - S, 0)
+    // payoff
     virtual double payoff(double z) const override;
 };
-//

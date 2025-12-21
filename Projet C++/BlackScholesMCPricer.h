@@ -9,15 +9,15 @@ class BlackScholesMCPricer
 {
 private:
     Option* _option;              
-    double _S0;                   // initial spot price
-    double _r;                    // risk-free interest rate
-    double _sigma;                // volatility
+    double _S0;                  
+    double _r;                    
+    double _sigma;                
 
-    long _nbPaths;                // total number of simulated paths
+    long _nbPaths;                
     double _sumPayoff;            
     double _sumPayoffSquared;     
 
-    vector<double> _timeSteps;   // simulation dates
+    vector<double> _timeSteps;  
 
 public:
     // Constructor

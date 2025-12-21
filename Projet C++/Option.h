@@ -1,28 +1,29 @@
 #pragma once
 #include <vector>
+#include <cmath>
 
 // Abstract base class for all options
 class Option {
 protected:
-    double _expiry;   // Maturity T
+    double _expiry;   
 
 public:
-    // constructor: set expiry
+    // constructor
     Option(double expiry);
     // destructeur
     virtual ~Option() {}
 
-    // getter on expiry
+    // getter 
     double getExpiry() const;
 
-    // Payoff h(z) of the option
+    // Payoff 
     virtual double payoff(double z) const = 0;
 
-    // By default: not Asian, not American
+    // By default :  not Asian and not American
     virtual bool isAsianOption() const { return false; }
     virtual bool isAmericanOption() const { return false; }
 
-    // Payoff computed from a path (default: payoff at the last point)
+    // Payoff 
     virtual double payoffPath(const std::vector<double>& path) const;
 
     

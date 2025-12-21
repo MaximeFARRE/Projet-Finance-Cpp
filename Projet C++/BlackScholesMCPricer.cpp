@@ -4,20 +4,12 @@
 
 #include <cmath>
 #include <iostream>
+#include <limits>
+
 using namespace std;
 
 //constructor
-BlackScholesMCPricer::BlackScholesMCPricer(Option* option,
-                                           double S0,
-                                           double r,
-                                           double sigma)
-    : _option(option),
-      _S0(S0),
-      _r(r),
-      _sigma(sigma),
-      _nbPaths(0),
-      _sumPayoff(0.0),
-      _sumPayoffSquared(0.0)
+BlackScholesMCPricer::BlackScholesMCPricer(Option* option,double S0, double r, double sigma) : _option(option), _S0(S0), _r(r), _sigma(sigma),  _nbPaths(0), _sumPayoff(0.0), _sumPayoffSquared(0.0)
 {
     if (_option == nullptr)
     {
@@ -58,10 +50,8 @@ void BlackScholesMCPricer::generate(long nbPaths)
     if (nSteps == 0)
         return;
 
-    // random number generator
     MT& mt = MT::getInstance();
 
-    // Reuse the same path vector for all simulations
     vector<double> path(nSteps);
 
     double S;
@@ -73,8 +63,8 @@ void BlackScholesMCPricer::generate(long nbPaths)
     // Simulate nbPaths trajectories
     for (long pathIndex = 0; pathIndex < nbPaths; ++pathIndex)
     {
-        S = _S0;       // starting price
-        prev_t = 0.0;  // previous time
+        S = _S0;       
+        prev_t = 0.0;  
 
         for (size_t i = 0; i < nSteps; ++i)
         {
@@ -90,8 +80,11 @@ void BlackScholesMCPricer::generate(long nbPaths)
                 double drift = (_r - 0.5 * _sigma * _sigma) * dt;
                 double diffusion = _sigma * sqrt(dt) * Z;
 
-                // Log-normal update for S_t
                 S = S * exp(drift + diffusion);
+
+                if (!isfinite(S) || S < 0.0) {
+                    S = 0.0;
+                }
             }
 
             // Store price 
@@ -131,21 +124,27 @@ double BlackScholesMCPricer::operator()() const
 vector<double> BlackScholesMCPricer::confidenceInterval() const
 {
     vector<double> ci(2, 0.0);
+    
+    if (_nbPaths < 1000 || _option == nullptr) {
+        ci[0] = -1e100;
+        ci[1] =  1e100;
+        return ci;
+    }
 
     double n = _nbPaths;
 
-    // E[X] and E[X^2]
+    // means
     double meanPayoff = _sumPayoff / n;
     double meanPayoff2 = _sumPayoffSquared / n;
 
-    // Variance of payoffs: Var(X) = E[X^2] - (E[X])^2
+    // Var
     double varPayoff = meanPayoff2 - meanPayoff * meanPayoff;
     if (varPayoff < 0.0)
         varPayoff = 0.0;  //  safety
 
     double stdPayoff = sqrt(varPayoff);  // standard deviation of payoffs
 
-    // Convert payoff statistics to price statistics (discounting)
+    // Convert payoff statistics to price statistics 
     double T = _option->getExpiry();
     double discount = exp(-_r * T);
 

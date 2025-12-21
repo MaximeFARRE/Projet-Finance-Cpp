@@ -1,18 +1,15 @@
 #pragma once
 #include "AsianOption.h"
 #include <vector>
+
 using namespace std;
 
-// Asian put option class
+// AsianPutOption is a child class of AsianOption
 class AsianPutOption : public AsianOption {
-private:
-    double _strike;
-
 public:
     // Constructor
     AsianPutOption(const vector<double>& timeSteps, double strike);
 
-    // Payoff of the Asian put
+    // Payoff 
     double payoff(double x) const override;
 };
-//

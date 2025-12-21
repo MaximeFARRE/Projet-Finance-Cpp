@@ -4,23 +4,22 @@
 #include <stdexcept>
 using namespace std;
 
-// Base class for Asian options 
+// AsianOption is a child class of Option
 class AsianOption : public Option {
 protected:
-    vector<double> _timeSteps;  // Time points where the asset is observed
-    double _strike;                  // Strike price
+    vector<double> _timeSteps;  
+    double _strike;                  
 
 public:
-    // Constructor
+    //Constructor
     AsianOption(const vector<double>& timeSteps, double strike);
 
-    // isAsianOption override
     bool isAsianOption() const override { return true; }
 
-    // time steps getter
+    // getter
     const vector<double>& getTimeSteps() const { return _timeSteps; }
 
-    // Computes payoff on a path
+
     double payoffPath(const vector<double>& path) const override;
 
     // Payoff function
