@@ -240,10 +240,8 @@ Execution time: 1.823412 seconds
 | Maxime Farré | [@MaximeFARRE](https://github.com/MaximeFARRE) | Asian options, Monte Carlo pricer, project integration |
 | Chloé Chaufour | [@chloe28072004](https://github.com/chloe28072004) | American options, CRR pricer, Black-Scholes pricer fix |
 | Mathilde Destailleur | [@mathildedest](https://github.com/mathildedest) | BinaryTree, CRR pricer |
-| Emilien Combaret | [@EmilienCombaret](https://github.com/EmilienCombaret) | Code review, documentation |
-| Auriane _(GitHub handle unknown)_ | — | European options base |
-
-> **Note:** The GitHub handle for Auriane could not be retrieved from the repository metadata. Please provide it to complete this section.
+| Auriane Carron | [@AurianeCarron73](https://github.com/AurianeCarron73) | European options base |
+| Emilien Combaret | [@EmilienCbrt](https://github.com/EmilienCbrt) · [@EmilienCombaret](https://github.com/EmilienCombaret) | Code review, documentation |
 
 ---
 
