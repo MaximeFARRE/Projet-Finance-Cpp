@@ -361,3 +361,18 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# C++ compiled binaries and runtime artifacts
+*.exe
+*.out
+*.o
+*.so
+*.dll
+*.a
+*.lib
+
+# Runtime output files
+*.txt
+
+# macOS
+.DS_Store
